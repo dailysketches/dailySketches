@@ -1,0 +1,22 @@
+<keyframes>
+    <key>
+        <flag>flag 1</flag>
+        <time>00:00:00:398</time>
+        <value>0.524999976</value>
+    </key>
+    <key>
+        <flag>flag 2</flag>
+        <time>00:00:00:990</time>
+        <value>0.524999976</value>
+    </key>
+    <key>
+        <flag>flag 3</flag>
+        <time>00:00:01:663</time>
+        <value>0.574999988</value>
+    </key>
+    <key>
+        <flag>flag 4</flag>
+        <time>00:00:02:697</time>
+        <value>0.524999976</value>
+    </key>
+</keyframes>

@@ -1,0 +1,8 @@
+site_name: Daily Sketches
+current_asset_dir: sketches-2015-04-22
+current_sketch_repo: dailySketches
+sketches_dir: ../openFrameworks/versions/084/apps/dailySketches/
+templates_dir: ../openFrameworks/versions/084/apps/dailySketchesTemplates/
+jekyll_dir: dailysketches.github.io
+live_url: http://dailysketches.github.io
+github_org_url: https://github.com/dailysketches

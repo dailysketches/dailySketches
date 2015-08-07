@@ -1,0 +1,26 @@
+<keyframes>
+    <key>
+        <time>00:00:00:283</time>
+        <value>0.550000012</value>
+    </key>
+    <key>
+        <time>00:00:00:583</time>
+        <value>0.225000024</value>
+    </key>
+    <key>
+        <time>00:00:01:259</time>
+        <value>0.475000024</value>
+    </key>
+    <key>
+        <time>00:00:01:836</time>
+        <value>0.625000000</value>
+    </key>
+    <key>
+        <time>00:00:02:364</time>
+        <value>0.175000012</value>
+    </key>
+    <key>
+        <time>00:00:02:861</time>
+        <value>0.324999988</value>
+    </key>
+</keyframes>
