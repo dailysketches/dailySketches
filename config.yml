@@ -11,6 +11,7 @@ sketch_manager_repo: dailySketches
 #This is the current sketch repo, which is anchored to the current month.
 #This entry will be rewritten on the first sketch entered for each month.
 current_sketch_repo: sketches-2015-08
+current_month: 2015-08
 
 #This is the jekyll repo which assembles and publishes the site from which your
 #sketches can be viewed online.
