@@ -1,8 +1,27 @@
+#This is the github organization account URL under which all your sketch-based
+#repos will live.
 github_org_url: https://github.com/dailysketches
+
+#This is the sketch manager repo, which:
+# - allows you to run rake tasks and manage all your underlying sketch repos
+# - stores templates from which you can generate new sketches
+# - provides shortcuts allowing quick access to openFrameworks directories
 sketch_manager_repo: dailySketches
+
+#This is the current sketch repo, which is anchored to the current month.
+#This entry will be rewritten on the first sketch entered for each month.
 current_sketch_repo: sketches-2015-08
+
+#This is the jekyll repo which assembles and publishes the site from which your
+#sketches can be viewed online.
 jekyll_repo: dailysketches.github.io
 site_name: Daily Sketches
 site_url: http://dailysketches.github.io
+
+#These are the paths to your openFrameworks directories from which you can work
+#on individual sketches and templates. For the most-part you will access these
+#from the Finder shortcuts in the root directory of the sketch manager repo. The
+#paths are included here so that rake tasks can help you copy from your
+#openFrameworks 'apps' directory to the sketch and jekyll repos for publishing.
 sketches_dir: ../openFrameworks/versions/084/apps/dailySketches/
 templates_dir: ../openFrameworks/versions/084/apps/dailySketchesTemplates/
