@@ -115,8 +115,8 @@ end
 def validate_snippet_and_description
 	valid = true
 	sketch_dirs.each do |sketch_dir|
-		dest_cpp_path = "sketches/#{sketch_dir}/src/ofApp.cpp"
-		unless File.exist?(dest_cpp_path)
+		already_copied_file = Dir.glob "sketches/*/#{sketch_dir}/src/ofApp.cpp"
+		if already_copied_file.empty?
 			contents = read_snippet_contents sketch_dir
 			if contents.nil? || contents.empty? || contents == $default_description_text
 				puts "WARNING: Snippet not found for sketch #{sketch_dir}"
