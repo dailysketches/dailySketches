@@ -23,5 +23,5 @@ site_url: http://dailysketches.github.io
 #from the Finder shortcuts in the root directory of the sketch manager repo. The
 #paths are included here so that rake tasks can help you copy from your
 #openFrameworks 'apps' directory to the sketch and jekyll repos for publishing.
-sketches_dir: ../openFrameworks/versions/084/apps/dailySketches/
-templates_dir: ../openFrameworks/versions/084/apps/dailySketchesTemplates/
+sketches_dir: ../openFrameworks/versions/084/apps/dailySketches
+templates_dir: ../openFrameworks/versions/084/apps/dailySketchesTemplates

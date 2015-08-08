@@ -89,7 +89,7 @@ end
 def validate_expected_asset_present
 	valid = true
 	sketch_dirs.each do |sketch_dir|
-		expected_asset_selector = "#{$sketches_dir}#{sketch_dir}/bin/data/out/#{sketch_dir}.*"
+		expected_asset_selector = "#{$sketches_dir}/#{sketch_dir}/bin/data/out/#{sketch_dir}.*"
 		if Dir.glob(expected_asset_selector).empty?
 			puts "WARNING: No valid asset found in 'bin/data/out' of sketch #{sketch_dir}"
 			valid = false
@@ -101,7 +101,7 @@ end
 def validate_unexpected_assets_not_present
 	valid = true
 	sketch_dirs.each do |sketch_dir|
-		all_asset_selector = "#{$sketches_dir}#{sketch_dir}/bin/data/out/*.*"
+		all_asset_selector = "#{$sketches_dir}/#{sketch_dir}/bin/data/out/*.*"
 		Dir.glob(all_asset_selector).select do |entry|
 			if File.basename(entry, '.*') != sketch_dir || !$sketch_extensions.include?(File.extname(entry))
 				puts "WARNING: Unexpected asset '#{File.basename entry}' found in 'bin/data/out' of sketch #{sketch_dir}"
@@ -275,7 +275,7 @@ def read_description_contents sketch_dir
 end
 
 def read_cpp_contents sketch_dir, regex
-	source_cpp_path = "#{$sketches_dir}#{sketch_dir}/src/ofApp.cpp"
+	source_cpp_path = "#{$sketches_dir}/#{sketch_dir}/src/ofApp.cpp"
 	if File.exist?(source_cpp_path)
 		file = open(source_cpp_path, 'r')
 		contents = file.read
