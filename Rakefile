@@ -59,6 +59,7 @@ end
 def load_config
 	config = YAML.load_file('config.yml')
 	$site_name = config['site_name']
+	$sketch_repo_name = config['sketch_repo_name']
 	$current_asset_dir = config['current_asset_dir']
 	$current_sketch_repo = config['current_sketch_repo']
 	$sketches_dir = config['sketches_dir']
@@ -231,7 +232,7 @@ date:   #{datestring}
 <div class="code">
     <ul>
 		<li><a href="{% post_url #{datestring}-sketch %}">permalink</a></li>
-		<li><a href="#$github_org_url/#$current_sketch_repo/tree/master/sketches/#{datestring}">code</a></li>
+		<li><a href="#$github_org_url/#$current_sketch_repo/tree/master/#{datestring}">code</a></li>
 		<li><a href="#" class="snippet-button">show snippet</a></li>
 	</ul>
     <pre class="snippet">
@@ -263,7 +264,7 @@ If the sketch uses any [addons](http://www.ofxaddons.com/unsorted) you don't alr
 
 In XCode you will see a panel like this. Expand the folders under `addons` until you can see some of the source files underneath.
 
-![How to find missing addon dependencies](../../images/dependencies.png)
+![How to find missing addon dependencies](#$github_org_url/#$sketch_repo_name/blob/master/images/dependencies.png?raw=true)
 
 In the example above, the addon `ofxLayerMask` is missing (it's source files are red), but `ofxGifEncoder` is present.
 
@@ -311,7 +312,7 @@ def reverse datestring
 end
 
 def raw_url datestring, ext
-	"#$github_org_url/#$current_asset_dir/blob/master/openFrameworks/#{datestring}.#{ext}?raw=true"
+	"#$github_org_url/#$current_asset_dir/blob/master/#{datestring}/bin/data/out/#{datestring}.#{ext}?raw=true"
 end
 
 def render_post_gif datestring

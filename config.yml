@@ -1,4 +1,5 @@
 site_name: Daily Sketches
+sketch_repo_name: dailySketches
 current_asset_dir: sketches-2015-04-22
 current_sketch_repo: dailySketches
 sketches_dir: ../openFrameworks/versions/084/apps/dailySketches/
