@@ -160,12 +160,12 @@ def generate_files
 	print "Generating jekyll post files... "
 	Dir.glob "sketches/#$current_sketch_repo/*/bin/data/out/*.*" do |filename|
 		if filename.end_with? '.gif'
-			filename.slice! '.gif'
+			filename = File.basename(filename, '.gif')
 			generate_post filename, 'gif'
 			generate_readme filename, 'gif'
 		end
 		if filename.end_with? '.mp3'
-			filename.slice! '.mp3'
+			filename = File.basename(filename, '.gif')
 			generate_post filename, 'mp3'
 			generate_readme filename, 'mp3'
 		end
