@@ -12,7 +12,6 @@ task :copy do
 	if validate
 		copy_templates
 		copy_sketches
-		copy_media
 		generate_files
 	else
 		puts 'Please fix these errors before copying'
@@ -60,7 +59,6 @@ def load_config
 	config = YAML.load_file('config.yml')
 	$site_name = config['site_name']
 	$sketch_repo_name = config['sketch_repo_name']
-	$current_asset_dir = config['current_asset_dir']
 	$current_sketch_repo = config['current_sketch_repo']
 	$sketches_dir = config['sketches_dir']
 	$templates_dir = config['templates_dir']
@@ -73,8 +71,6 @@ end
 def print_all_status
 	puts "Sketches status:\n================\n"
 	execute_silent "git status"
-	puts "\nAssets status:\n==============\n"
-	execute_silent "cd assets/#$current_asset_dir && git status && cd ../.."
 	puts "\nJekyll status:\n==============\n"
 	execute_silent "cd #$jekyll_dir && git status && cd .."
 end
@@ -82,8 +78,6 @@ end
 def deploy_all datestring
 	puts "\nDeploying sketch:\n================="
 	execute "pwd && git add sketches/#{datestring} && git commit -m 'Adds sketch #{datestring}' && git push"
-	puts "\nDeploying assets:\n================="
-	execute "cd assets/#{$current_asset_dir} && pwd && git add */#{datestring}.* && git commit -m 'Adds sketch #{datestring}' && git push"
 	puts "\nDeploying jekyll:\n================="
 	execute "cd #$jekyll_dir && pwd && git add app/_posts/#{datestring}-sketch.md && git commit -m 'Adds sketch #{datestring}' && git push && grunt deploy"
 end
@@ -157,21 +151,13 @@ def copy_sketches
 	print "Copying openFrameworks sketches... "
 	execute_silent "rsync -ru #{$sketches_dir} sketches"
 	endtime = Time.now
-	print "Completed in #{endtime - starttime} seconds.\n"
-end
-
-def copy_media
-	starttime = Time.now
-	print "Copying generated openFrameworks media... "
-	execute_silent "mv -f sketches/*/bin/data/out/* assets/#$current_asset_dir/openFrameworks/"
-	endtime = Time.now
 	print "completed in #{endtime - starttime} seconds.\n"
 end
 
 def generate_files
 	starttime = Time.now
 	print "Generating jekyll post files... "
-	Dir.foreach "assets/#$current_asset_dir/openFrameworks/" do |filename|
+	Dir.glob "sketches/#$current_sketch_repo/*/bin/data/out/*.*" do |filename|
 		if filename.end_with? '.gif'
 			filename.slice! '.gif'
 			generate_post filename, 'gif'
@@ -312,7 +298,7 @@ def reverse datestring
 end
 
 def raw_url datestring, ext
-	"#$github_org_url/#$current_asset_dir/blob/master/#{datestring}/bin/data/out/#{datestring}.#{ext}?raw=true"
+	"#$github_org_url/#$current_sketch_repo/blob/master/#{datestring}/bin/data/out/#{datestring}.#{ext}?raw=true"
 end
 
 def render_post_gif datestring
