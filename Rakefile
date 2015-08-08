@@ -141,7 +141,7 @@ end
 def copy_templates
 	starttime = Time.now
 	print "Copying openFrameworks templates... "
-	execute_silent "rsync -ru #$templates_dir templates"
+	execute_silent "rsync -ru #$templates_dir/ templates"
 	endtime = Time.now
 	print "completed in #{endtime - starttime} seconds.\n"
 end
@@ -149,7 +149,7 @@ end
 def copy_sketches
 	starttime = Time.now
 	print "Copying openFrameworks sketches... "
-	execute_silent "rsync -ru #$sketches_dir sketches/#$current_sketch_repo"
+	execute_silent "rsync -ru #$sketches_dir/ sketches/#$current_sketch_repo"
 	endtime = Time.now
 	print "completed in #{endtime - starttime} seconds.\n"
 end
