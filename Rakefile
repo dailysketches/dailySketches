@@ -62,7 +62,7 @@ def load_config
 	$current_sketch_repo = config['current_sketch_repo']
 	$sketches_dir = config['sketches_dir']
 	$templates_dir = config['templates_dir']
-	$jekyll_dir = config['jekyll_dir']
+	$jekyll_repo = config['jekyll_repo']
 	$site_url = config['site_url']
 	$github_org_url = config['github_org_url']
 end
@@ -72,14 +72,14 @@ def print_all_status
 	puts "Sketches status:\n================\n"
 	execute_silent "git status"
 	puts "\nJekyll status:\n==============\n"
-	execute_silent "cd #$jekyll_dir && git status && cd .."
+	execute_silent "cd #$jekyll_repo && git status && cd .."
 end
 
 def deploy_all datestring
 	puts "\nDeploying sketch:\n================="
 	execute "pwd && git add sketches/#{datestring} && git commit -m 'Adds sketch #{datestring}' && git push"
 	puts "\nDeploying jekyll:\n================="
-	execute "cd #$jekyll_dir && pwd && git add app/_posts/#{datestring}-sketch.md && git commit -m 'Adds sketch #{datestring}' && git push && grunt deploy"
+	execute "cd #$jekyll_repo && pwd && git add app/_posts/#{datestring}-sketch.md && git commit -m 'Adds sketch #{datestring}' && git push && grunt deploy"
 end
 
 def validate
@@ -174,7 +174,7 @@ def generate_files
 end
 
 def generate_post datestring, ext
-	filepath = "#$jekyll_dir/app/_posts/#{datestring}-sketch.md"
+	filepath = "#$jekyll_repo/app/_posts/#{datestring}-sketch.md"
 	unless File.exist?(filepath)
 		file = open(filepath, 'w')
 		file.write(post_file_contents datestring, ext)

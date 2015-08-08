@@ -1,7 +1,7 @@
 github_org_url: https://github.com/dailysketches
 sketch_manager_repo: dailySketches
 current_sketch_repo: sketches-2015-08
-jekyll_dir: dailysketches.github.io
+jekyll_repo: dailysketches.github.io
 site_name: Daily Sketches
 site_url: http://dailysketches.github.io
 sketches_dir: ../openFrameworks/versions/084/apps/dailySketches/
