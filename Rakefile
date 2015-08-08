@@ -58,7 +58,7 @@ end
 def load_config
 	config = YAML.load_file('config.yml')
 	$site_name = config['site_name']
-	$sketch_repo_name = config['sketch_repo_name']
+	$sketch_manager_repo = config['sketch_manager_repo']
 	$current_sketch_repo = config['current_sketch_repo']
 	$sketches_dir = config['sketches_dir']
 	$templates_dir = config['templates_dir']
@@ -250,7 +250,7 @@ If the sketch uses any [addons](http://www.ofxaddons.com/unsorted) you don't alr
 
 In XCode you will see a panel like this. Expand the folders under `addons` until you can see some of the source files underneath.
 
-![How to find missing addon dependencies](#$github_org_url/#$sketch_repo_name/blob/master/images/dependencies.png?raw=true)
+![How to find missing addon dependencies](#$github_org_url/#$sketch_manager_repo/blob/master/images/dependencies.png?raw=true)
 
 In the example above, the addon `ofxLayerMask` is missing (it's source files are red), but `ofxGifEncoder` is present.
 
