@@ -63,7 +63,7 @@ def load_config
 	$sketches_dir = config['sketches_dir']
 	$templates_dir = config['templates_dir']
 	$jekyll_dir = config['jekyll_dir']
-	$live_url = config['live_url']
+	$site_url = config['site_url']
 	$github_org_url = config['github_org_url']
 end
 
@@ -238,7 +238,7 @@ This subfolder of the [#$current_sketch_repo repo](#$github_org_url/#$current_sk
 
 #{ext == 'gif' ? render_readme_gif(datestring) : render_readme_mp3(datestring)}
 
-This source code is published automatically along with each sketch I add to [#$site_name](#$live_url). Here is a [permalink to this sketch](#$live_url/sketch-#{reverse datestring}/) on the #$site_name site.
+This source code is published automatically along with each sketch I add to [#$site_name](#$site_url). Here is a [permalink to this sketch](#$site_url/sketch-#{reverse datestring}/) on the #$site_name site.
 
 Run this yourself
 --
@@ -324,6 +324,6 @@ end
 def render_readme_mp3 datestring
 	<<-eos
 ![Sketch #{datestring}](#{raw_url datestring, 'png'})
-[Listen to the sketch on #$site_name](#$live_url/sketch-#{reverse datestring}/)"
+[Listen to the sketch on #$site_name](#$site_url/sketch-#{reverse datestring}/)"
 eos
 end
