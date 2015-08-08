@@ -70,14 +70,14 @@ end
 #tasks
 def print_all_status
 	puts "Sketches status:\n================\n"
-	execute_silent "git status"
+	execute_silent "cd sketches/#$current_sketch_repo && git status && cd ../.."
 	puts "\nJekyll status:\n==============\n"
 	execute_silent "cd #$jekyll_repo && git status && cd .."
 end
 
 def deploy_all datestring
 	puts "\nDeploying sketch:\n================="
-	execute "pwd && git add sketches/#{datestring} && git commit -m 'Adds sketch #{datestring}' && git push"
+	execute "cd sketches/#$current_sketch_repo && pwd && git add #{datestring} && git commit -m 'Adds sketch #{datestring}' && git push & cd ../.."
 	puts "\nDeploying jekyll:\n================="
 	execute "cd #$jekyll_repo && pwd && git add app/_posts/#{datestring}-sketch.md && git commit -m 'Adds sketch #{datestring}' && git push && grunt deploy"
 end
@@ -141,7 +141,7 @@ end
 def copy_templates
 	starttime = Time.now
 	print "Copying openFrameworks templates... "
-	execute_silent "rsync -ru #{$templates_dir} templates"
+	execute_silent "rsync -ru #$templates_dir templates"
 	endtime = Time.now
 	print "completed in #{endtime - starttime} seconds.\n"
 end
@@ -149,7 +149,7 @@ end
 def copy_sketches
 	starttime = Time.now
 	print "Copying openFrameworks sketches... "
-	execute_silent "rsync -ru #{$sketches_dir} sketches"
+	execute_silent "rsync -ru #$sketches_dir sketches/#$current_sketch_repo"
 	endtime = Time.now
 	print "completed in #{endtime - starttime} seconds.\n"
 end
@@ -183,7 +183,7 @@ def generate_post datestring, ext
 end
 
 def generate_readme datestring, ext
-	filepath = "sketches/#{datestring}/README.md"
+	filepath = "sketches/#$current_sketch_repo/#{datestring}/README.md"
 	unless File.exist?(filepath)
 		file = open(filepath, 'w')
 		file.write(readme_file_contents datestring, ext)
