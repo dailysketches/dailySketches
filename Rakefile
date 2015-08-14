@@ -59,8 +59,8 @@ def load_config
 	config = YAML.load_file('config.yml')
 	$site_name = config['site_name']
 	$sketch_manager_repo = config['sketch_manager_repo']
-	$current_sketch_repo = config['current_sketch_repo']
 	$current_month = config['current_month']
+	$current_sketch_repo = "sketches-#$current_month"
 	$sketches_dir = config['sketches_dir']
 	$templates_dir = config['templates_dir']
 	$jekyll_repo = config['jekyll_repo']
