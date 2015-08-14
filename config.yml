@@ -17,7 +17,6 @@ current_month: 2015-08
 #sketches can be viewed online.
 jekyll_repo: dailysketches.github.io
 site_name: Daily Sketches
-site_url: http://dailysketches.github.io
 
 #These are the paths to your openFrameworks directories from which you can work
 #on individual sketches and templates. For the most-part you will access these

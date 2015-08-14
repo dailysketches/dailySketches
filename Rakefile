@@ -64,7 +64,7 @@ def load_config
 	$sketches_dir = config['sketches_dir']
 	$templates_dir = config['templates_dir']
 	$jekyll_repo = config['jekyll_repo']
-	$site_url = config['site_url']
+	$site_url = "http://#$jekyll_repo"
 	$github_org_url = config['github_org_url']
 end
 
