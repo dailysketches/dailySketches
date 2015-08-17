@@ -12,6 +12,7 @@ $num_managed_repos = 2
 task :copy do
 	load_config
 	if validate
+		check_for_new_month
 		copy_templates
 		copy_sketches
 		generate_files
@@ -69,8 +70,12 @@ def load_config
 	config = YAML.load_file('config.yml')
 	$site_name = config['site_name']
 	$sketch_manager_repo = config['sketch_manager_repo']
+
 	$current_month = config['current_month']
 	$next_month = get_next_month
+	$current_month_name = month_name $current_month
+	$next_month_name = month_name $next_month
+
 	$current_sketch_repo = "sketches-#$current_month"
 	$sketches_dir = config['sketches_dir']
 	$templates_dir = config['templates_dir']
@@ -83,6 +88,11 @@ def get_next_month
 	current_month_date = DateTime.parse "#$current_month-01"
 	next_month_date = current_month_date >> 1
 	next_month = next_month_date.strftime '%Y-%m'
+end
+
+def month_name month_str
+	month_date = DateTime.parse "#{month_str}-01"
+	month_date.strftime '%B'
 end
 
 #tasks
@@ -161,7 +171,7 @@ def check_for_new_month
 		if ready_for_month_switch?
 			puts 'Ready to switch months'
 		else
-			puts 'A sketch for a new month was detected in your sketches directory. Please make sure you copy and deploy all of the current month\'s sketches, then come back and run \'rake copy\' again to transition to a new month\'s sketch repository.'
+			puts "WARNING: One or more sketches for #$next_month_name were detected, but will not be copied yet. To copy them, please deploy all #$current_month_name sketches and run 'rake copy' again."
 		end
 	end
 end
