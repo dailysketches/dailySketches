@@ -23,8 +23,9 @@ end
 task :check do
 	load_config
 	validate
-	print_uncopied_sketches
-	check_undeployed_sketches
+	check_for_new_month
+	#print_uncopied_sketches
+	#check_undeployed_sketches
 end
 
 task :validate do
@@ -155,6 +156,24 @@ def sketch_dirs
 	end
 end
 
+def check_for_new_month
+	if new_month_sketch_detected?
+		if ready_for_month_switch?
+			puts 'Ready to switch months'
+		else
+			puts 'A sketch for a new month was detected in your sketches directory. Please make sure you copy and deploy all of the current month\'s sketches, then come back and run \'rake copy\' again to transition to a new month\'s sketch repository.'
+		end
+	end
+end
+
+def new_month_sketch_detected?
+	uncopied_sketches($next_month).length > 0
+end
+
+def ready_for_month_switch?
+	uncopied_sketches($current_month).length == 0 && !undeployed_sketches_exist?
+end
+
 def print_uncopied_sketches
 	current_month_sketches = uncopied_sketches $current_month
 	if current_month_sketches.size > 0
@@ -175,13 +194,7 @@ def uncopied_sketches target_month
 	found_uncopied
 end
 
-def check_undeployed_sketches
-	if undeployed_sketches
-		puts 'You have undeployed sketches for the current month'
-	end
-end
-
-def undeployed_sketches
+def undeployed_sketches_exist?
 	system_output = `rake status`
 	return system_output.scan($git_clean_dir).length != $num_managed_repos
 end
