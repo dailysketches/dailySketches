@@ -20,7 +20,7 @@ end
 
 task :validate do
 	load_config
-	validate
+	validate && print_uncopied_sketches
 end
 
 task :status do
@@ -137,6 +137,26 @@ def sketch_dirs
 	Dir.entries($sketches_dir).select do |entry|
 		File.directory? File.join($sketches_dir, entry) and !(entry == '.' || entry == '..')
 	end
+end
+
+def print_uncopied_sketches
+	current_month_sketches = uncopied_sketches $current_month
+	if current_month_sketches.size > 0
+		puts 'The following openFrameworks sketches are ready to be copied:'
+		puts current_month_sketches
+	end
+end
+
+def uncopied_sketches target_month
+	found_uncopied = Array.new
+	Dir.glob "#$sketches_dir/#{target_month}*" do |dirpath|
+		sketch_dir = File.basename dirpath
+		target_filepath = "sketches/sketches-#{target_month}/#{sketch_dir}/src/ofApp.cpp"
+		unless File.exist?(target_filepath)
+			found_uncopied.push sketch_dir
+		end
+	end
+	found_uncopied
 end
 
 def copy_templates
