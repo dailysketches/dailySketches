@@ -111,9 +111,13 @@ end
 
 #tasks
 def print_all_status
-	puts "Sketches status:\n================\n"
+	puts "Sketch repo status:\n===================\n"
+	puts "Remote: https://github.com/#$github_org_name/sketches-#$current_month\n"
+	puts "Local:  sketches/sketches-#$current_month\n\n"
 	execute_silent "cd sketches/#$current_sketch_repo && git status && cd ../.."
-	puts "\nJekyll status:\n==============\n"
+	puts "\nJekyll repo status:\n===================\n"
+	puts "Remote: https://github.com/#$github_org_name/#$jekyll_repo\n"
+	puts "Local:  #$jekyll_repo\n\n"
 	execute_silent "cd #$jekyll_repo && git status && cd .."
 end
 
@@ -203,7 +207,7 @@ def ready_for_month_switch?
 end
 
 def print_uncopied_sketches
-	puts "Waiting to be copied:\n=====================\n"
+	puts "Source sketches dir:\n====================\n"
 	current_month_sketches = uncopied_sketches $current_month
 	if current_month_sketches.size == 0
 		puts 'No sketches found waiting to be copied.'
