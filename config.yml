@@ -1,6 +1,6 @@
-#This is the github organization account URL under which all your sketch-based
+#This is the github organization account name under which all your sketch-based
 #repos will live.
-github_org_url: https://github.com/dailysketches
+github_org_name: dailysketches
 
 #This is the sketch manager repo, which:
 # - allows you to run rake tasks and manage all your underlying sketch repos

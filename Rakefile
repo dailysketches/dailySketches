@@ -81,7 +81,7 @@ def load_config
 	$templates_dir = config['templates_dir']
 	$jekyll_repo = config['jekyll_repo']
 	$site_url = "http://#$jekyll_repo"
-	$github_org_url = config['github_org_url']
+	$github_org_name = config['github_org_name']
 end
 
 def get_next_month
@@ -289,7 +289,7 @@ date:   #{datestring}
 <div class="code">
     <ul>
 		<li><a href="{% post_url #{datestring}-sketch %}">permalink</a></li>
-		<li><a href="#$github_org_url/#$current_sketch_repo/tree/master/#{datestring}">code</a></li>
+		<li><a href="https://github.com/#$github_org_name/#$current_sketch_repo/tree/master/#{datestring}">code</a></li>
 		<li><a href="#" class="snippet-button">show snippet</a></li>
 	</ul>
     <pre class="snippet">
@@ -305,7 +305,7 @@ def readme_file_contents datestring, ext
 	<<-eos
 Sketch #{datestring}
 --
-This subfolder of the [#$current_sketch_repo repo](#$github_org_url/#$current_sketch_repo) is the root of an individual openFrameworks sketch. It contains the full source code used to generate this sketch:
+This subfolder of the [#$current_sketch_repo repo](https://github.com/#$github_org_name/#$current_sketch_repo) is the root of an individual openFrameworks sketch. It contains the full source code used to generate this sketch:
 
 #{ext == 'gif' ? render_readme_gif(datestring) : render_readme_mp3(datestring)}
 
@@ -321,7 +321,7 @@ If the sketch uses any [addons](http://www.ofxaddons.com/unsorted) you don't alr
 
 In XCode you will see a panel like this. Expand the folders under `addons` until you can see some of the source files underneath.
 
-![How to find missing addon dependencies](#$github_org_url/#$sketch_manager_repo/blob/master/images/dependencies.png?raw=true)
+![How to find missing addon dependencies](https://github.com/#$github_org_name/#$sketch_manager_repo/blob/master/images/dependencies.png?raw=true)
 
 In the example above, the addon `ofxLayerMask` is missing (it's source files are red), but `ofxGifEncoder` is present.
 
@@ -369,7 +369,7 @@ def reverse datestring
 end
 
 def raw_url datestring, ext
-	"#$github_org_url/#$current_sketch_repo/blob/master/#{datestring}/bin/data/out/#{datestring}.#{ext}?raw=true"
+	"https://github.com/#$github_org_name/#$current_sketch_repo/blob/master/#{datestring}/bin/data/out/#{datestring}.#{ext}?raw=true"
 end
 
 def render_post_gif datestring
