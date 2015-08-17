@@ -20,12 +20,16 @@ task :copy do
 	end
 end
 
+task :check do
+	load_config
+	validate
+	print_uncopied_sketches
+	check_undeployed_sketches
+end
+
 task :validate do
 	load_config
-	if validate
-		print_uncopied_sketches
-		check_undeployed_sketches
-	end
+	validate
 end
 
 task :status do
