@@ -69,12 +69,19 @@ def load_config
 	$site_name = config['site_name']
 	$sketch_manager_repo = config['sketch_manager_repo']
 	$current_month = config['current_month']
+	$next_month = get_next_month
 	$current_sketch_repo = "sketches-#$current_month"
 	$sketches_dir = config['sketches_dir']
 	$templates_dir = config['templates_dir']
 	$jekyll_repo = config['jekyll_repo']
 	$site_url = "http://#$jekyll_repo"
 	$github_org_url = config['github_org_url']
+end
+
+def get_next_month
+	current_month_date = DateTime.parse "#$current_month-01"
+	next_month_date = current_month_date >> 1
+	next_month = next_month_date.strftime '%Y-%m'
 end
 
 #tasks
