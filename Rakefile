@@ -44,6 +44,11 @@ task :st do
 	print_all_status
 end
 
+task :move do
+	load_config
+	increment_month
+end
+
 task :deploy, :datestring do |t, args|
 	load_config
 	if args[:datestring] == nil
@@ -93,6 +98,15 @@ end
 def month_name month_str
 	month_date = DateTime.parse "#{month_str}-01"
 	month_date.strftime '%B'
+end
+
+def increment_month
+	if new_month_sketch_detected? && ready_for_month_switch?
+		puts "Moving to new repo:\n===================\n"
+		execute "sed -i '' 's/current_month: #$current_month/current_month: #$next_month/g' config.yml && git add config.yml && git commit -m 'Increments to #$next_month' && git push"
+	else
+		puts 'You are not ready to move. Try running \'rake copy\' for more detail.'
+	end
 end
 
 #tasks
@@ -169,7 +183,11 @@ end
 def check_for_new_month
 	if new_month_sketch_detected?
 		if ready_for_month_switch?
-			puts 'Ready to switch months'
+			puts "You are ready to switch from your #$current_month_name repo to a new #$next_month_name repo!"
+			puts "1. Go to https://github.com/organizations/#$github_org_name/repositories/new"
+			puts "2. Enter sketches-#$next_month as the repository name and click 'create repository'"
+			puts "3. Run 'rake move' to update the manager config"
+			puts "The next time you run 'rake copy' everything will be working with the new month's repo"
 		else
 			puts "WARNING: One or more sketches for #$next_month_name were detected, but will not be copied yet. To copy them, please deploy all #$current_month_name sketches and run 'rake copy' again."
 		end
