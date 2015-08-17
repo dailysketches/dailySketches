@@ -36,12 +36,12 @@ end
 
 task :status do
 	load_config
+	print_uncopied_sketches
 	print_all_status
 end
 
 task :st do
-	load_config
-	print_all_status
+	Rake::Task['status'].invoke
 end
 
 task :move do
@@ -203,11 +203,17 @@ def ready_for_month_switch?
 end
 
 def print_uncopied_sketches
+	puts "Waiting to be copied:\n=====================\n"
 	current_month_sketches = uncopied_sketches $current_month
-	if current_month_sketches.size > 0
+	if current_month_sketches.size == 0
+		puts 'No sketches found waiting to be copied.'
+	else
 		puts 'The following openFrameworks sketches are ready to be copied:'
 		puts current_month_sketches
+		puts
+		validate
 	end
+	puts
 end
 
 def uncopied_sketches target_month
