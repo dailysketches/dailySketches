@@ -5,6 +5,8 @@ include ERB::Util
 $no_errors = true
 $sketch_extensions = ['.gif', '.png', '.mp3']
 $default_description_text = 'Write your description here'
+$git_clean_dir = 'working directory clean'
+$num_managed_repos = 2
 
 #api
 task :copy do
@@ -20,7 +22,10 @@ end
 
 task :validate do
 	load_config
-	validate && print_uncopied_sketches
+	if validate
+		print_uncopied_sketches
+		check_undeployed_sketches
+	end
 end
 
 task :status do
@@ -157,6 +162,17 @@ def uncopied_sketches target_month
 		end
 	end
 	found_uncopied
+end
+
+def check_undeployed_sketches
+	if undeployed_sketches
+		puts 'You have undeployed sketches for the current month'
+	end
+end
+
+def undeployed_sketches
+	system_output = `rake status`
+	return system_output.scan($git_clean_dir).length != $num_managed_repos
 end
 
 def copy_templates
