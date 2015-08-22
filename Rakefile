@@ -142,12 +142,11 @@ def deploy_all datestring
 end
 
 def generate datestring, source
-	puts "generate[#{datestring}, #{source}]"
-	filepath = "sketches/#$current_sketch_repo/#{datestring}"
-	if File.exist?(filepath)
+	dirpath = "#$sketches_dir/#{datestring}"
+	if Dir.exist?(dirpath)
 		puts "Sketch #{datestring} already exists... aborting."
 	else
-		execute_silent "rsync -ru #$templates_dir/example-#{source} #$sketches_dir/"
+		execute_silent "rsync -ru #$templates_dir/example-#{source} #$sketches_dir"
 		execute_silent "mv #$sketches_dir/example-#{source} #$sketches_dir/#{datestring}"
 	end
 end
