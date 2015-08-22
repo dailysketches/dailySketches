@@ -25,9 +25,9 @@ end
 task :generate, [:datestring, :source] do |t, args|
 	load_config
 	if args[:datestring] == nil || !$template_options.include?(args[:source])
-		puts 'This command generates a new blank sketch from a template'
+		puts 'This command generates a new runnable blank sketch from a template'
 		puts 'Usage: rake generate[today,GifEncoder]'
-		puts 'or.    rake generate[yesterday,AudioSequencer]'
+		puts 'or:    rake generate[yesterday,AudioSequencer]'
 		puts 'or:    rake generate[yyyy-mm-dd,AudioSequencer]'
 	elsif args[:datestring] == 'today'
 		generate Date::today.strftime, args[:source]
@@ -144,6 +144,12 @@ end
 
 def generate datestring, source
 	puts "generate[#{datestring}, #{source}]"
+	filepath = "sketches/#$current_sketch_repo/#{datestring}"
+	if File.exist?(filepath)
+		puts "Sketch #{datestring} already exists... aborting."
+	else
+		#execute_silent "rsync -ru ?? #$sketches_dir/#$current_month/"
+	end
 end
 
 def validate
