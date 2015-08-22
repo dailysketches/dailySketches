@@ -161,9 +161,9 @@ def generate datestring, source
 		execute_silent "cd #$sketches_dir/#{datestring}/#{datestring}.xcodeproj && LC_ALL=C find . -path '*.*' -type f -exec sed -i '' -e 's/example-#{source}/#{datestring}/g' {} +"
 
 		#clear generated binaries
-		execute_silent "rm -rf #$sketches_dir/#{datestring}/bin/*.app"
+		execute_silent "rm -f #$sketches_dir/#{datestring}/bin/*.app"
 		$sketch_extensions.each do |ext|
-			execute_silent "rm #$sketches_dir/#{datestring}/bin/data/out/*#{ext}"
+			execute_silent "rm -f #$sketches_dir/#{datestring}/bin/data/out/*#{ext}"
 		end
 		puts "Created sketch #{datestring} in run-sketches."
 	end
