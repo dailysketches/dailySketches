@@ -144,7 +144,7 @@ end
 def generate datestring, source
 	dirpath = "#$sketches_dir/#{datestring}"
 	if Dir.exist?(dirpath)
-		puts "Sketch #{datestring} already exists... aborting."
+		puts "WARNING: Sketch #{datestring} already exists... aborting."
 	else
 		execute_silent "rsync -ru #$templates_dir/example-#{source} #$sketches_dir"
 		execute_silent "mv #$sketches_dir/example-#{source} #$sketches_dir/#{datestring}"
