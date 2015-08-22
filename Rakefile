@@ -164,8 +164,8 @@ def generate datestring, source
 		execute_silent "rm -rf #{xcodeproj}/project.xcworkspace/xcuserdata"
 		execute_silent "rm -rf #{xcodeproj}/xcuserdata"
 
-		#clear generated binaries
-		execute_silent "rm -f #$sketches_dir/#{datestring}/bin/*.app"
+		#clear generated binaries (note that .app files can be packages)
+		execute_silent "rm -rf #$sketches_dir/#{datestring}/bin/*.app"
 		$sketch_extensions.each do |ext|
 			execute_silent "rm -f #$sketches_dir/#{datestring}/bin/data/out/*#{ext}"
 		end
