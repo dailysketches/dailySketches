@@ -160,6 +160,10 @@ def generate datestring, source
 		#recursive rewrite of references to old filenames
 		execute_silent "cd #$sketches_dir/#{datestring}/#{datestring}.xcodeproj && LC_ALL=C find . -path '*.*' -type f -exec sed -i '' -e 's/example-#{source}/#{datestring}/g' {} +"
 
+		#clear user data dirs
+		execute_silent "rm -rf #{xcodeproj}/project.xcworkspace/xcuserdata"
+		execute_silent "rm -rf #{xcodeproj}/xcuserdata"
+
 		#clear generated binaries
 		execute_silent "rm -f #$sketches_dir/#{datestring}/bin/*.app"
 		$sketch_extensions.each do |ext|
