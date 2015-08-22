@@ -146,10 +146,21 @@ def generate datestring, source
 	if Dir.exist?(dirpath)
 		puts "WARNING: Sketch #{datestring} already exists... aborting."
 	else
+		#copy the template
 		execute_silent "rsync -ru #$templates_dir/example-#{source} #$sketches_dir"
+
+		#rename files
+		xcodeproj = "#$sketches_dir/example-#{source}/example-#{source}.xcodeproj"
+		execute_silent "mv #{xcodeproj}/project.xcworkspace/xcshareddata/example-#{source}.xccheckout #{xcodeproj}/project.xcworkspace/xcshareddata/#{datestring}.xccheckout"
+		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/example-#{source}\\\ Debug.xcscheme   #{xcodeproj}/xcshareddata/xcschemes/#{datestring}\\\ Debug.xcscheme"
+		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/example-#{source}\\\ Release.xcscheme #{xcodeproj}/xcshareddata/xcschemes/#{datestring}\\\ Release.xcscheme"
+		execute_silent "mv #{xcodeproj} #$sketches_dir/example-#{source}/#{datestring}.xcodeproj"
 		execute_silent "mv #$sketches_dir/example-#{source} #$sketches_dir/#{datestring}"
-		execute_silent "mv #$sketches_dir/#{datestring}/example-#{source}.xcodeproj #$sketches_dir/#{datestring}/#{datestring}.xcodeproj"
+
+		#recursive rewrite of references to old filenames
 		execute_silent "cd #$sketches_dir/#{datestring}/#{datestring}.xcodeproj && LC_ALL=C find . -path '*.*' -type f -exec sed -i '' -e 's/example-#{source}/#{datestring}/g' {} +"
+
+		#clear generated binaries
 		execute_silent "rm -rf #$sketches_dir/#{datestring}/bin/*.app"
 		$sketch_extensions.each do |ext|
 			execute_silent "rm #$sketches_dir/#{datestring}/bin/data/out/*#{ext}"
