@@ -4,6 +4,7 @@ require 'yaml'
 include ERB::Util
 $no_errors = true
 $sketch_extensions = ['.gif', '.png', '.mp3']
+$template_options = ['GifEncoder', 'AudioSequencer']
 $default_description_text = 'Write your description here'
 $git_clean_dir = 'working directory clean'
 $num_managed_repos = 2
@@ -18,6 +19,27 @@ task :copy do
 		generate_files
 	else
 		puts 'Please fix these errors before copying'
+	end
+end
+
+task :generate, [:datestring, :source] do |t, args|
+	load_config
+	if args[:datestring] == nil || !$template_options.include?(args[:source])
+		puts 'This command generates a new blank sketch from a template'
+		puts 'Usage: rake generate[today,GifEncoder]'
+		puts 'or.    rake generate[yesterday,AudioSequencer]'
+		puts 'or:    rake generate[yyyy-mm-dd,AudioSequencer]'
+	elsif args[:datestring] == 'today'
+		generate Date::today.strftime, args[:source]
+	elsif args[:datestring] == 'yesterday'
+		generate Date::today.prev_day.strftime, args[:source]
+	else
+		datestring = args[:datestring].strip.chomp('\n')
+		if datestring == ''
+			puts 'Usage: rake generate[_date_, _source_]'
+		else
+			generate datestring, args[:source]
+		end
 	end
 end
 
@@ -118,6 +140,10 @@ def deploy_all datestring
 	execute "cd sketches/#$current_sketch_repo && pwd && git add #{datestring} && git commit -m 'Adds sketch #{datestring}' && git push & cd ../.."
 	puts "\nDeploying jekyll:\n================="
 	execute "cd #$jekyll_repo && pwd && git add app/_posts/#{datestring}-sketch.md && git commit -m 'Adds sketch #{datestring}' && git push && grunt deploy"
+end
+
+def generate datestring, source
+	puts "generate[#{datestring}, #{source}]"
 end
 
 def validate
