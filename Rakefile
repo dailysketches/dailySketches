@@ -21,14 +21,6 @@ task :copy do
 	end
 end
 
-task :check do
-	load_config
-	validate
-	check_for_new_month
-	#print_uncopied_sketches
-	#check_undeployed_sketches
-end
-
 task :validate do
 	load_config
 	validate
