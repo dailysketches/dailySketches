@@ -14,7 +14,6 @@ task :copy do
 	load_config
 	if validate
 		check_for_new_month
-		copy_templates
 		copy_sketches
 		generate_files
 	else
@@ -259,14 +258,6 @@ end
 def undeployed_sketches_exist?
 	system_output = `rake status`
 	return system_output.scan($git_clean_dir).length != $num_managed_repos
-end
-
-def copy_templates
-	starttime = Time.now
-	print "Copying openFrameworks templates... "
-	execute_silent "rsync -ru #$templates_dir/ templates"
-	endtime = Time.now
-	print "completed in #{endtime - starttime} seconds.\n"
 end
 
 def copy_sketches
