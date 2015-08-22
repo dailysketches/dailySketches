@@ -148,6 +148,7 @@ def generate datestring, source
 	else
 		execute_silent "rsync -ru #$templates_dir/example-#{source} #$sketches_dir"
 		execute_silent "mv #$sketches_dir/example-#{source} #$sketches_dir/#{datestring}"
+		puts "Created sketch #{datestring} in run-sketches."
 	end
 end
 
