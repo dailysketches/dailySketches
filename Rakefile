@@ -150,6 +150,7 @@ def generate datestring, source
 		execute_silent "mv #$sketches_dir/example-#{source} #$sketches_dir/#{datestring}"
 		execute_silent "mv #$sketches_dir/#{datestring}/example-#{source}.xcodeproj #$sketches_dir/#{datestring}/#{datestring}.xcodeproj"
 		execute_silent "rm -rf #$sketches_dir/#{datestring}/bin/*.app"
+		execute_silent "cd #$sketches_dir/#{datestring}/#{datestring}.xcodeproj && LC_ALL=C find . -path '*.*' -type f -exec sed -i '' -e 's/example-#{source}/#{datestring}/g' {} +"
 		puts "Created sketch #{datestring} in run-sketches."
 	end
 end
