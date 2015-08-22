@@ -4,7 +4,7 @@ require 'yaml'
 include ERB::Util
 $no_errors = true
 $sketch_extensions = ['.gif', '.png', '.mp3']
-$template_options = ['GifEncoder', 'AudioSequencer']
+$template_options = ['gifEncoder', 'audioSequencer']
 $default_description_text = 'Write your description here'
 $git_clean_dir = 'working directory clean'
 $num_managed_repos = 2
@@ -25,9 +25,9 @@ task :generate, [:datestring, :source] do |t, args|
 	load_config
 	if args[:datestring] == nil || !$template_options.include?(args[:source])
 		puts 'This command generates a new runnable blank sketch from a template'
-		puts 'Usage: rake generate[today,GifEncoder]'
-		puts 'or:    rake generate[yesterday,AudioSequencer]'
-		puts 'or:    rake generate[yyyy-mm-dd,AudioSequencer]'
+		puts 'Usage: rake generate[today,gifEncoder]'
+		puts 'or:    rake generate[yesterday,audioSequencer]'
+		puts 'or:    rake generate[yyyy-mm-dd,audioSequencer]'
 	elsif args[:datestring] == 'today'
 		generate Date::today.strftime, args[:source]
 	elsif args[:datestring] == 'yesterday'
@@ -147,7 +147,8 @@ def generate datestring, source
 	if File.exist?(filepath)
 		puts "Sketch #{datestring} already exists... aborting."
 	else
-		#execute_silent "rsync -ru ?? #$sketches_dir/#$current_month/"
+		execute_silent "rsync -ru #$templates_dir/example-#{source} #$sketches_dir/"
+		execute_silent "mv #$sketches_dir/example-#{source} #$sketches_dir/#{datestring}"
 	end
 end
 
