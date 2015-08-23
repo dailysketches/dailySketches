@@ -288,23 +288,24 @@ def sketch_clone_args? source, dest
 end
 
 def clone_from_template source, datestring
-	dirpath = "#$sketches_dir/#{datestring}"
-	if Dir.exist?(dirpath)
-		puts "WARNING: Sketch #{datestring} already exists... aborting."
-	else
+	source = "example-#{source}"
+	source_path = "#$templates_dir/#{source}"
+	dest_path = "#$sketches_dir/#{datestring}"
+
+	if ready_for_clone?(source, source_path, datestring, dest_path)
 		#copy the template
-		execute_silent "rsync -ru #$templates_dir/example-#{source} #$sketches_dir"
+		execute_silent "rsync -ru #{source_path} #$sketches_dir"
 
 		#rename files
-		xcodeproj = "#$sketches_dir/example-#{source}/example-#{source}.xcodeproj"
-		execute_silent "mv #{xcodeproj}/project.xcworkspace/xcshareddata/example-#{source}.xccheckout #{xcodeproj}/project.xcworkspace/xcshareddata/#{datestring}.xccheckout"
-		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/example-#{source}\\\ Debug.xcscheme   #{xcodeproj}/xcshareddata/xcschemes/#{datestring}\\\ Debug.xcscheme"
-		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/example-#{source}\\\ Release.xcscheme #{xcodeproj}/xcshareddata/xcschemes/#{datestring}\\\ Release.xcscheme"
-		execute_silent "mv #{xcodeproj} #$sketches_dir/example-#{source}/#{datestring}.xcodeproj"
-		execute_silent "mv #$sketches_dir/example-#{source} #$sketches_dir/#{datestring}"
+		xcodeproj = "#$sketches_dir/#{source}/#{source}.xcodeproj"
+		execute_silent "mv #{xcodeproj}/project.xcworkspace/xcshareddata/#{source}.xccheckout #{xcodeproj}/project.xcworkspace/xcshareddata/#{datestring}.xccheckout"
+		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/#{source}\\\ Debug.xcscheme   #{xcodeproj}/xcshareddata/xcschemes/#{datestring}\\\ Debug.xcscheme"
+		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/#{source}\\\ Release.xcscheme #{xcodeproj}/xcshareddata/xcschemes/#{datestring}\\\ Release.xcscheme"
+		execute_silent "mv #{xcodeproj} #$sketches_dir/#{source}/#{datestring}.xcodeproj"
+		execute_silent "mv #$sketches_dir/#{source} #$sketches_dir/#{datestring}"
 
 		#recursive rewrite of references to old filenames
-		execute_silent "cd #$sketches_dir/#{datestring}/#{datestring}.xcodeproj && LC_ALL=C find . -path '*.*' -type f -exec sed -i '' -e 's/example-#{source}/#{datestring}/g' {} +"
+		execute_silent "cd #$sketches_dir/#{datestring}/#{datestring}.xcodeproj && LC_ALL=C find . -path '*.*' -type f -exec sed -i '' -e 's/#{source}/#{datestring}/g' {} +"
 
 		#clear user data dirs
 		execute_silent "rm -rf #{xcodeproj}/project.xcworkspace/xcuserdata"
@@ -327,8 +328,22 @@ def clone_from_template source, datestring
 			file.write contents
 		end
 
-		puts "Created sketch #{datestring} from example-#{source}."
+		puts "Created sketch #{datestring} from #{source}."
 	end
+end
+
+def ready_for_clone? source, source_path, dest, dest_path
+	result = true
+	unless Dir.exist?(source_path)
+		puts "WARNING: Source for #{source} not found... aborting."
+		result = false
+	end
+
+	if Dir.exist?(dest_path)
+		puts "WARNING: Sketch #{dest} already exists... aborting."
+		result = false
+	end
+	result
 end
 
 def clone_from_sketch source, datestring
