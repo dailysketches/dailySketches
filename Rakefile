@@ -287,38 +287,50 @@ def sketch_clone_args? source, dest
 	valid_date?(source) && valid_date?(dest) && source != dest
 end
 
-def clone_from_template source, datestring
+def clone_from_template source, dest
 	source = "example-#{source}"
 	source_path = "#$templates_dir/#{source}"
-	dest_path = "#$sketches_dir/#{datestring}"
+	success_msg = "Created sketch #{dest} by cloning template #{source}."
+	clone source, source_path, dest, success_msg
+end
 
-	if ready_for_clone?(source, source_path, datestring, dest_path)
+def clone_from_sketch source, dest
+	source_path = "#$sketches_dir/#{source}"
+	success_msg = "Created sketch #{dest} by cloning sketch #{source}."
+	clone source, source_path, dest, success_msg
+end
+
+def clone source, source_path, dest, success_msg
+	dest_path = "#$sketches_dir/#{dest}"
+
+	if ready_for_clone?(source, source_path, dest, dest_path)
 		#copy the template
 		execute_silent "rsync -ru #{source_path} #$sketches_dir"
 
 		#rename files
 		xcodeproj = "#$sketches_dir/#{source}/#{source}.xcodeproj"
-		execute_silent "mv #{xcodeproj}/project.xcworkspace/xcshareddata/#{source}.xccheckout #{xcodeproj}/project.xcworkspace/xcshareddata/#{datestring}.xccheckout"
-		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/#{source}\\\ Debug.xcscheme   #{xcodeproj}/xcshareddata/xcschemes/#{datestring}\\\ Debug.xcscheme"
-		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/#{source}\\\ Release.xcscheme #{xcodeproj}/xcshareddata/xcschemes/#{datestring}\\\ Release.xcscheme"
-		execute_silent "mv #{xcodeproj} #$sketches_dir/#{source}/#{datestring}.xcodeproj"
-		execute_silent "mv #$sketches_dir/#{source} #$sketches_dir/#{datestring}"
+		execute_silent "mv #{xcodeproj}/project.xcworkspace/xcshareddata/#{source}.xccheckout #{xcodeproj}/project.xcworkspace/xcshareddata/#{dest}.xccheckout"
+		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/#{source}\\\ Debug.xcscheme   #{xcodeproj}/xcshareddata/xcschemes/#{dest}\\\ Debug.xcscheme"
+		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/#{source}\\\ Release.xcscheme #{xcodeproj}/xcshareddata/xcschemes/#{dest}\\\ Release.xcscheme"
+		execute_silent "mv #{xcodeproj} #$sketches_dir/#{source}/#{dest}.xcodeproj"
+		execute_silent "mv #$sketches_dir/#{source} #$sketches_dir/#{dest}"
 
 		#recursive rewrite of references to old filenames
-		execute_silent "cd #$sketches_dir/#{datestring}/#{datestring}.xcodeproj && LC_ALL=C find . -path '*.*' -type f -exec sed -i '' -e 's/#{source}/#{datestring}/g' {} +"
+		execute_silent "cd #$sketches_dir/#{dest}/#{dest}.xcodeproj && LC_ALL=C find . -path '*.*' -type f -exec sed -i '' -e 's/#{source}/#{dest}/g' {} +"
 
 		#clear user data dirs
 		execute_silent "rm -rf #{xcodeproj}/project.xcworkspace/xcuserdata"
 		execute_silent "rm -rf #{xcodeproj}/xcuserdata"
-		execute_silent "rm -rf #$sketches_dir/#{datestring}/bin/data/AudioUnitPresets/.trash/"
+		execute_silent "rm -rf #$sketches_dir/#{dest}/bin/data/AudioUnitPresets/.trash/"
 
 		#clear generated binaries (note that .app files can be packages)
-		execute_silent "rm -rf #$sketches_dir/#{datestring}/bin/*.app"
+		execute_silent "rm -rf #$sketches_dir/#{dest}/bin/*.app"
 		$sketch_extensions.each do |ext|
-			execute_silent "rm -f #$sketches_dir/#{datestring}/bin/data/out/*#{ext}"
+			execute_silent "rm -f #$sketches_dir/#{dest}/bin/data/out/*#{ext}"
 		end
 
-		cpp_path = "#$sketches_dir/#{datestring}/src/ofApp.cpp"
+		#remove comments, load snippet headings
+		cpp_path = "#$sketches_dir/#{dest}/src/ofApp.cpp"
 		contents = File.read(cpp_path)
 		file = File.new(cpp_path, "w+")
 		File.open(file, "a") do |file|
@@ -328,7 +340,7 @@ def clone_from_template source, datestring
 			file.write contents
 		end
 
-		puts "Created sketch #{datestring} from #{source}."
+		puts success_msg
 	end
 end
 
@@ -344,10 +356,6 @@ def ready_for_clone? source, source_path, dest, dest_path
 		result = false
 	end
 	result
-end
-
-def clone_from_sketch source, datestring
-	puts 'clone_from_sketch'
 end
 
 def valid_date? arg
