@@ -4,7 +4,7 @@ require 'yaml'
 include ERB::Util
 $no_errors = true
 $sketch_extensions = ['.gif', '.png', '.mp3']
-$template_options = ['gifEncoder', 'audioSequencer']
+$template_options = {'g' => 'gifEncoder', 'a' => 'audioSequencer'}
 $default_description_text = 'Write your description here'
 $git_clean_dir = 'working directory clean'
 $num_managed_repos = 2
@@ -23,22 +23,22 @@ end
 
 task :clone, [:source, :datestring] do |t, args|
 	load_config
-	if args[:datestring] == nil || !$template_options.include?(args[:source])
+
+	source = args[:source] || ''
+	source = source.size == 1 ? $template_options[source] : source
+
+	dest = args[:datestring] || ''
+	dest = dest == 'today' ? Date::today.strftime : dest
+	dest = dest == 'yesterday' ? Date::today.prev_day.strftime : dest
+	dest = dest.strip.chomp('\n')
+
+	if dest == '' || !$template_options.has_value?(source)
 		puts 'This command generates a new runnable blank sketch from a template'
 		puts 'Usage: rake clone[source,destination]'
 		puts 'or:    rake clone[gifEncoder,yesterday]'
 		puts 'or:    rake clone[audioSequencer,yyyy-mm-dd]'
-	elsif args[:datestring] == 'today'
-		clone Date::today.strftime, args[:source]
-	elsif args[:datestring] == 'yesterday'
-		clone Date::today.prev_day.strftime, args[:source]
 	else
-		datestring = args[:datestring].strip.chomp('\n')
-		if datestring == ''
-			puts 'Usage: rake clone[source,destination]'
-		else
-			clone datestring, args[:source]
-		end
+		clone dest, source
 	end
 end
 
