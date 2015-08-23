@@ -175,7 +175,10 @@ def clone datestring, source
 		contents = File.read(cpp_path)
 		file = File.new(cpp_path, "w+")
 		File.open(file, "a") do |file|
-			file.write contents.gsub(/[\n\r]*.*\/\/.*/, '')
+			contents = contents.gsub(/[\n\r]*.*\/\/.*/, '')
+			contents = contents.gsub("\nvoid ofApp::setup(){", "/* Begin description\n{\n    #$default_description_text\n}\nEnd description */\n\n/* Snippet begin */\nvoid ofApp::setup(){")
+			contents = contents.gsub("}\n\nvoid ofApp::keyPressed(int key){", "}\n/* Snippet end */\n\nvoid ofApp::keyPressed(int key){")
+			file.write contents
 		end
 
 		puts "Created sketch #{datestring} from example-#{source}."
