@@ -35,10 +35,12 @@ task :clone, [:source, :datestring] do |t, args|
 	if valid_template?(source) && valid_date?(dest)
 		clone dest, source
 	else
-		puts 'This command generates a new runnable blank sketch from a template'
-		puts 'Usage: rake clone[source,destination]'
-		puts 'or:    rake clone[gifEncoder,yesterday]'
-		puts 'or:    rake clone[audioSequencer,yyyy-mm-dd]'
+		puts 'This command clones a new sketch from a template.'
+		puts 'Usage:   rake clone[source,destination]'	
+		puts 'e.g.     rake clone[gifEncoder,yesterday]'
+		puts 'or:      rake clone[audioSequencer,yyyy-mm-dd]'
+		puts 'or:      rake clone[a,yesterday]      // \'a\' short for audioSequencer'
+		puts 'or:      rake clone[g,yyyy-mm-dd]     // \'g\' short for gifEncoder'
 	end
 end
 
