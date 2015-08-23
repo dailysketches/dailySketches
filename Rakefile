@@ -163,6 +163,7 @@ def clone datestring, source
 		#clear user data dirs
 		execute_silent "rm -rf #{xcodeproj}/project.xcworkspace/xcuserdata"
 		execute_silent "rm -rf #{xcodeproj}/xcuserdata"
+		execute_silent "rm -rf #$sketches_dir/#{datestring}/bin/data/AudioUnitPresets/.trash/"
 
 		#clear generated binaries (note that .app files can be packages)
 		execute_silent "rm -rf #$sketches_dir/#{datestring}/bin/*.app"
