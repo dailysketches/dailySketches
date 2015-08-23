@@ -291,13 +291,13 @@ end
 
 def clone_from_template source, dest
 	source = "example-#{source}"
-	source_path = "#$templates_dir/#{source}"
+	source_path = "#$templates_dir/#{source}/"
 	success_msg = "Created sketch #{dest} by cloning template #{source}."
 	clone source, source_path, dest, success_msg
 end
 
 def clone_from_sketch source, dest
-	source_path = "#$sketches_dir/#{source}"
+	source_path = "#$sketches_dir/#{source}/"
 	success_msg = "Created sketch #{dest} by cloning sketch #{source}."
 	clone source, source_path, dest, success_msg
 end
@@ -307,33 +307,32 @@ def clone source, source_path, dest, success_msg
 
 	if ready_for_clone?(source, source_path, dest, dest_path)
 		#copy the template
-		execute_silent "rsync -ru #{source_path} #$sketches_dir"
+		execute_silent "rsync -ru #{source_path} #{dest_path}"
 
 		#rename files
-		xcodeproj = "#$sketches_dir/#{source}/#{source}.xcodeproj"
+		xcodeproj = "#{dest_path}/#{source}.xcodeproj"
 		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/#{source}\\\ Debug.xcscheme   #{xcodeproj}/xcshareddata/xcschemes/#{dest}\\\ Debug.xcscheme"
 		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/#{source}\\\ Release.xcscheme #{xcodeproj}/xcshareddata/xcschemes/#{dest}\\\ Release.xcscheme"
-		execute_silent "mv #{xcodeproj} #$sketches_dir/#{source}/#{dest}.xcodeproj"
-		execute_silent "mv #$sketches_dir/#{source} #$sketches_dir/#{dest}"
+		execute_silent "mv #{xcodeproj} #{dest_path}/#{dest}.xcodeproj"
+		xcodeproj = "#{dest_path}/#{dest}.xcodeproj"
 
 		#recursive rewrite of references to old filenames
-		execute_silent "cd #$sketches_dir/#{dest}/#{dest}.xcodeproj && LC_ALL=C find . -path '*.*' -type f -exec sed -i '' -e 's/#{source}/#{dest}/g' {} +"
+		execute_silent "cd #{xcodeproj} && LC_ALL=C find . -path '*.*' -type f -exec sed -i '' -e 's/#{source}/#{dest}/g' {} +"
 
 		#clear project instance-specific & user data
-		xcodeproj = "#$sketches_dir/#{dest}/#{dest}.xcodeproj"
 		execute_silent "rm -f  #{xcodeproj}/project.xcworkspace/xcshareddata/*.xccheckout"
 		execute_silent "rm -rf #{xcodeproj}/project.xcworkspace/xcuserdata"
 		execute_silent "rm -rf #{xcodeproj}/xcuserdata"
 		execute_silent "rm -rf #$sketches_dir/#{dest}/bin/data/AudioUnitPresets/.trash/"
 
 		#clear generated binaries (note that .app files can be packages)
-		execute_silent "rm -rf #$sketches_dir/#{dest}/bin/*.app"
+		execute_silent "rm -rf #{dest_path}/bin/*.app"
 		$sketch_extensions.each do |ext|
-			execute_silent "rm -f #$sketches_dir/#{dest}/bin/data/out/*#{ext}"
+			execute_silent "rm -f #{dest_path}/bin/data/out/*#{ext}"
 		end
 
 		#remove comments, load snippet headings
-		cpp_path = "#$sketches_dir/#{dest}/src/ofApp.cpp"
+		cpp_path = "#{dest_path}/src/ofApp.cpp"
 		contents = File.read(cpp_path)
 		file = File.new(cpp_path, "w+")
 		File.open(file, "a") do |file|
