@@ -311,8 +311,8 @@ def clone source, source_path, dest, success_msg
 
 		#rename files
 		xcodeproj = "#{dest_path}/#{source}.xcodeproj"
-		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/#{source}\\\ Debug.xcscheme   #{xcodeproj}/xcshareddata/xcschemes/#{dest}\\\ Debug.xcscheme"
-		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/#{source}\\\ Release.xcscheme #{xcodeproj}/xcshareddata/xcschemes/#{dest}\\\ Release.xcscheme"
+		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/#{source}\\\ Debug.xcscheme   #{xcodeproj}/xcshareddata/xcschemes/#{dest}\\\ Debug.xcscheme || true"
+		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/#{source}\\\ Release.xcscheme #{xcodeproj}/xcshareddata/xcschemes/#{dest}\\\ Release.xcscheme || true"
 		execute_silent "mv #{xcodeproj} #{dest_path}/#{dest}.xcodeproj"
 		xcodeproj = "#{dest_path}/#{dest}.xcodeproj"
 
