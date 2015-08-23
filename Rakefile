@@ -21,13 +21,13 @@ task :copy do
 	end
 end
 
-task :clone, [:datestring, :source] do |t, args|
+task :clone, [:source, :datestring] do |t, args|
 	load_config
 	if args[:datestring] == nil || !$template_options.include?(args[:source])
 		puts 'This command generates a new runnable blank sketch from a template'
-		puts 'Usage: rake clone[today,gifEncoder]'
-		puts 'or:    rake clone[yesterday,audioSequencer]'
-		puts 'or:    rake clone[yyyy-mm-dd,audioSequencer]'
+		puts 'Usage: rake clone[source,destination]'
+		puts 'or:    rake clone[gifEncoder,yesterday]'
+		puts 'or:    rake clone[audioSequencer,yyyy-mm-dd]'
 	elsif args[:datestring] == 'today'
 		clone Date::today.strftime, args[:source]
 	elsif args[:datestring] == 'yesterday'
@@ -35,7 +35,7 @@ task :clone, [:datestring, :source] do |t, args|
 	else
 		datestring = args[:datestring].strip.chomp('\n')
 		if datestring == ''
-			puts 'Usage: rake clone[today,gifEncoder] etc'
+			puts 'Usage: rake clone[source,destination]'
 		else
 			clone datestring, args[:source]
 		end
