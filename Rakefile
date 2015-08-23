@@ -233,7 +233,11 @@ def validate_snippet_and_description
 end
 
 def valid_date? arg
-	/^\d{4}-\d{2}-\d{2}$/.match arg
+	begin
+	   Date.parse(arg) && /^\d{4}-\d{2}-\d{2}$/.match(arg)
+	rescue ArgumentError
+	   false
+	end
 end
 
 def valid_template? arg
