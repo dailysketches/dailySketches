@@ -38,17 +38,15 @@ end
 
 task :clone, [:source, :datestring] do |t, args|
 	load_config
+	source = dereference args[:source]
+	dest = dereference args[:datestring]
 
-	source = args[:source] || ''
-	source = source.size == 1 ? $template_options[source] : source
+	if template_clone_args?(source, dest)
+		clone_from_template source, dest
 
-	dest = args[:datestring] || ''
-	dest = dest == 'today' ? Date::today.strftime : dest
-	dest = dest == 'yesterday' ? Date::today.prev_day.strftime : dest
-	dest = dest.strip.chomp('\n')
+	elsif sketch_clone_args?(source, dest)
+		clone_from_sketch source, dest
 
-	if valid_template?(source) && valid_date?(dest)
-		clone dest, source
 	else
 		puts 'This command clones a new sketch from a template.'
 		puts 'Usage:   rake clone[source,destination]'	
@@ -273,7 +271,23 @@ def pull_sketches
 end
 
 #clone
-def clone datestring, source
+def dereference arg
+	result = arg || ''
+	result = result.size == 1 ? $template_options[result] : result
+	result = result == 'today' ? Date::today.strftime : result
+	result = result == 'yesterday' ? Date::today.prev_day.strftime : result
+	result
+end
+
+def template_clone_args? source, dest
+	valid_template?(source) && valid_date?(dest)
+end
+
+def sketch_clone_args? source, dest
+	true
+end
+
+def clone_from_template source, datestring
 	dirpath = "#$sketches_dir/#{datestring}"
 	if Dir.exist?(dirpath)
 		puts "WARNING: Sketch #{datestring} already exists... aborting."
@@ -315,6 +329,10 @@ def clone datestring, source
 
 		puts "Created sketch #{datestring} from example-#{source}."
 	end
+end
+
+def clone_from_sketch source, datestring
+	puts 'clone_from_sketch'
 end
 
 def valid_date? arg
