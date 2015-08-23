@@ -10,6 +10,21 @@ $git_clean_dir = 'working directory clean'
 $num_managed_repos = 2
 
 #api
+task :status do
+	load_config
+	print_uncopied_sketches
+	print_all_status
+end
+
+task :st do
+	Rake::Task['status'].invoke
+end
+
+task :validate do
+	load_config
+	validate
+end
+
 task :copy do
 	load_config
 	if validate
@@ -44,26 +59,6 @@ task :clone, [:source, :datestring] do |t, args|
 	end
 end
 
-task :validate do
-	load_config
-	validate
-end
-
-task :status do
-	load_config
-	print_uncopied_sketches
-	print_all_status
-end
-
-task :st do
-	Rake::Task['status'].invoke
-end
-
-task :move do
-	load_config
-	increment_month
-end
-
 task :deploy, :datestring do |t, args|
 	load_config
 	if args[:datestring] == nil
@@ -83,6 +78,11 @@ task :deploy, :datestring do |t, args|
 			deploy_all datestring
 		end
 	end
+end
+
+task :move do
+	load_config
+	increment_month
 end
 
 #config
@@ -124,7 +124,24 @@ def increment_month
 	end
 end
 
-#tasks
+#command handling
+def execute commandstring
+	puts "Executing command: #{commandstring}"
+	execute_silent commandstring
+end
+
+def execute_silent commandstring
+	if $no_errors
+		$no_errors = system commandstring
+		unless $no_errors
+			puts "\nEXECUTION ERROR. Subsequent commands will be ignored\n"
+		end
+	else
+		puts "\nEXECUTION SKIPPED due to previous error\n"
+	end
+end
+
+#print
 def print_all_status
 	puts "Sketch repo status:\n===================\n"
 	puts "Remote: https://github.com/#$github_org_name/sketches-#$current_month\n"
@@ -136,57 +153,21 @@ def print_all_status
 	execute_silent "cd #$jekyll_repo && git status && cd .."
 end
 
-def deploy_all datestring
-	puts "\nDeploying sketch:\n================="
-	execute "cd sketches/#$current_sketch_repo && pwd && git add #{datestring} && git commit -m 'Adds sketch #{datestring}' && git push & cd ../.."
-	puts "\nDeploying jekyll:\n================="
-	execute "cd #$jekyll_repo && pwd && git add app/_posts/#{datestring}-sketch.md && git commit -m 'Adds sketch #{datestring}' && git push && grunt deploy"
-end
-
-def clone datestring, source
-	dirpath = "#$sketches_dir/#{datestring}"
-	if Dir.exist?(dirpath)
-		puts "WARNING: Sketch #{datestring} already exists... aborting."
+def print_uncopied_sketches
+	puts "Source sketches dir:\n====================\n"
+	current_month_sketches = uncopied_sketches $current_month
+	if current_month_sketches.size == 0
+		puts 'No sketches found waiting to be copied.'
 	else
-		#copy the template
-		execute_silent "rsync -ru #$templates_dir/example-#{source} #$sketches_dir"
-
-		#rename files
-		xcodeproj = "#$sketches_dir/example-#{source}/example-#{source}.xcodeproj"
-		execute_silent "mv #{xcodeproj}/project.xcworkspace/xcshareddata/example-#{source}.xccheckout #{xcodeproj}/project.xcworkspace/xcshareddata/#{datestring}.xccheckout"
-		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/example-#{source}\\\ Debug.xcscheme   #{xcodeproj}/xcshareddata/xcschemes/#{datestring}\\\ Debug.xcscheme"
-		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/example-#{source}\\\ Release.xcscheme #{xcodeproj}/xcshareddata/xcschemes/#{datestring}\\\ Release.xcscheme"
-		execute_silent "mv #{xcodeproj} #$sketches_dir/example-#{source}/#{datestring}.xcodeproj"
-		execute_silent "mv #$sketches_dir/example-#{source} #$sketches_dir/#{datestring}"
-
-		#recursive rewrite of references to old filenames
-		execute_silent "cd #$sketches_dir/#{datestring}/#{datestring}.xcodeproj && LC_ALL=C find . -path '*.*' -type f -exec sed -i '' -e 's/example-#{source}/#{datestring}/g' {} +"
-
-		#clear user data dirs
-		execute_silent "rm -rf #{xcodeproj}/project.xcworkspace/xcuserdata"
-		execute_silent "rm -rf #{xcodeproj}/xcuserdata"
-		execute_silent "rm -rf #$sketches_dir/#{datestring}/bin/data/AudioUnitPresets/.trash/"
-
-		#clear generated binaries (note that .app files can be packages)
-		execute_silent "rm -rf #$sketches_dir/#{datestring}/bin/*.app"
-		$sketch_extensions.each do |ext|
-			execute_silent "rm -f #$sketches_dir/#{datestring}/bin/data/out/*#{ext}"
-		end
-
-		cpp_path = "#$sketches_dir/#{datestring}/src/ofApp.cpp"
-		contents = File.read(cpp_path)
-		file = File.new(cpp_path, "w+")
-		File.open(file, "a") do |file|
-			contents = contents.gsub(/[\n\r]*.*\/\/.*/, '')
-			contents = contents.gsub("\nvoid ofApp::setup(){", "/* Begin description\n{\n    #$default_description_text\n}\nEnd description */\n\n/* Snippet begin */\nvoid ofApp::setup(){")
-			contents = contents.gsub("}\n\nvoid ofApp::keyPressed(int key){", "}\n/* Snippet end */\n\nvoid ofApp::keyPressed(int key){")
-			file.write contents
-		end
-
-		puts "Created sketch #{datestring} from example-#{source}."
+		puts 'The following openFrameworks sketches are ready to be copied:'
+		puts current_month_sketches
+		puts
+		validate
 	end
+	puts
 end
 
+#validate (file / directory states)
 def validate
 	validate_unexpected_assets_not_present && validate_expected_asset_present && validate_snippet_and_description
 end
@@ -237,24 +218,13 @@ def validate_snippet_and_description
 	valid
 end
 
-def valid_date? arg
-	begin
-	   Date.parse(arg) && /^\d{4}-\d{2}-\d{2}$/.match(arg)
-	rescue ArgumentError
-	   false
-	end
-end
-
-def valid_template? arg
-	$template_options.has_value?(arg)
-end
-
 def sketch_dirs
 	Dir.entries($sketches_dir).select do |entry|
 		File.directory? File.join($sketches_dir, entry) and !(entry == '.' || entry == '..')
 	end
 end
 
+#copy
 def check_for_new_month
 	if new_month_sketch_detected?
 		if ready_for_month_switch?
@@ -275,20 +245,6 @@ end
 
 def ready_for_month_switch?
 	uncopied_sketches($current_month).length == 0 && !undeployed_sketches_exist?
-end
-
-def print_uncopied_sketches
-	puts "Source sketches dir:\n====================\n"
-	current_month_sketches = uncopied_sketches $current_month
-	if current_month_sketches.size == 0
-		puts 'No sketches found waiting to be copied.'
-	else
-		puts 'The following openFrameworks sketches are ready to be copied:'
-		puts current_month_sketches
-		puts
-		validate
-	end
-	puts
 end
 
 def uncopied_sketches target_month
@@ -316,6 +272,72 @@ def copy_sketches
 	print "completed in #{endtime - starttime} seconds.\n"
 end
 
+#clone
+def clone datestring, source
+	dirpath = "#$sketches_dir/#{datestring}"
+	if Dir.exist?(dirpath)
+		puts "WARNING: Sketch #{datestring} already exists... aborting."
+	else
+		#copy the template
+		execute_silent "rsync -ru #$templates_dir/example-#{source} #$sketches_dir"
+
+		#rename files
+		xcodeproj = "#$sketches_dir/example-#{source}/example-#{source}.xcodeproj"
+		execute_silent "mv #{xcodeproj}/project.xcworkspace/xcshareddata/example-#{source}.xccheckout #{xcodeproj}/project.xcworkspace/xcshareddata/#{datestring}.xccheckout"
+		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/example-#{source}\\\ Debug.xcscheme   #{xcodeproj}/xcshareddata/xcschemes/#{datestring}\\\ Debug.xcscheme"
+		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/example-#{source}\\\ Release.xcscheme #{xcodeproj}/xcshareddata/xcschemes/#{datestring}\\\ Release.xcscheme"
+		execute_silent "mv #{xcodeproj} #$sketches_dir/example-#{source}/#{datestring}.xcodeproj"
+		execute_silent "mv #$sketches_dir/example-#{source} #$sketches_dir/#{datestring}"
+
+		#recursive rewrite of references to old filenames
+		execute_silent "cd #$sketches_dir/#{datestring}/#{datestring}.xcodeproj && LC_ALL=C find . -path '*.*' -type f -exec sed -i '' -e 's/example-#{source}/#{datestring}/g' {} +"
+
+		#clear user data dirs
+		execute_silent "rm -rf #{xcodeproj}/project.xcworkspace/xcuserdata"
+		execute_silent "rm -rf #{xcodeproj}/xcuserdata"
+		execute_silent "rm -rf #$sketches_dir/#{datestring}/bin/data/AudioUnitPresets/.trash/"
+
+		#clear generated binaries (note that .app files can be packages)
+		execute_silent "rm -rf #$sketches_dir/#{datestring}/bin/*.app"
+		$sketch_extensions.each do |ext|
+			execute_silent "rm -f #$sketches_dir/#{datestring}/bin/data/out/*#{ext}"
+		end
+
+		cpp_path = "#$sketches_dir/#{datestring}/src/ofApp.cpp"
+		contents = File.read(cpp_path)
+		file = File.new(cpp_path, "w+")
+		File.open(file, "a") do |file|
+			contents = contents.gsub(/[\n\r]*.*\/\/.*/, '')
+			contents = contents.gsub("\nvoid ofApp::setup(){", "/* Begin description\n{\n    #$default_description_text\n}\nEnd description */\n\n/* Snippet begin */\nvoid ofApp::setup(){")
+			contents = contents.gsub("}\n\nvoid ofApp::keyPressed(int key){", "}\n/* Snippet end */\n\nvoid ofApp::keyPressed(int key){")
+			file.write contents
+		end
+
+		puts "Created sketch #{datestring} from example-#{source}."
+	end
+end
+
+def valid_date? arg
+	begin
+	   Date.parse(arg) && /^\d{4}-\d{2}-\d{2}$/.match(arg)
+	rescue ArgumentError
+	   false
+	end
+end
+
+def valid_template? arg
+	$template_options.has_value?(arg)
+end
+
+#deploy
+def deploy_all datestring
+	puts "\nDeploying sketch:\n================="
+	execute "cd sketches/#$current_sketch_repo && pwd && git add #{datestring} && git commit -m 'Adds sketch #{datestring}' && git push & cd ../.."
+	puts "\nDeploying jekyll:\n================="
+	execute "cd #$jekyll_repo && pwd && git add app/_posts/#{datestring}-sketch.md && git commit -m 'Adds sketch #{datestring}' && git push && grunt deploy"
+end
+
+#generate
 def generate_files
 	starttime = Time.now
 	print "Generating jekyll post files... "
@@ -353,19 +375,31 @@ def generate_readme datestring, ext
 	end
 end
 
-def execute commandstring
-	puts "Executing command: #{commandstring}"
-	execute_silent commandstring
+#read from disk
+def read_snippet_contents sketch_dir
+	regex = /\/\* Snippet begin \*\/(.*?)\/\* Snippet end \*\//m
+	read_cpp_contents sketch_dir, regex
 end
 
-def execute_silent commandstring
-	if $no_errors
-		$no_errors = system commandstring
-		unless $no_errors
-			puts "\nEXECUTION ERROR. Subsequent commands will be ignored\n"
+def read_description_contents sketch_dir
+	regex = /\/\* Begin description\n\{(.*?)\}\nEnd description \*\//m
+	read_cpp_contents sketch_dir, regex
+end
+
+def read_cpp_contents sketch_dir, regex
+	source_cpp_path = "#{$sketches_dir}/#{sketch_dir}/src/ofApp.cpp"
+	if File.exist?(source_cpp_path)
+		file = open(source_cpp_path, 'r')
+		contents = file.read
+		file.close
+		selected = contents[regex, 1]
+		if selected.nil?
+			selected
+		else
+			html_escape(selected.strip.chomp('\n'))
 		end
 	else
-		puts "\nEXECUTION SKIPPED due to previous error\n"
+		nil
 	end
 end
 
@@ -424,33 +458,6 @@ In that case you should clone the addon(s) at the most recent commit before the 
 
 Yes, openFrameworks could use a good equivalent of [bundler](http://bundler.io/). You should write one!
 eos
-end
-
-def read_snippet_contents sketch_dir
-	regex = /\/\* Snippet begin \*\/(.*?)\/\* Snippet end \*\//m
-	read_cpp_contents sketch_dir, regex
-end
-
-def read_description_contents sketch_dir
-	regex = /\/\* Begin description\n\{(.*?)\}\nEnd description \*\//m
-	read_cpp_contents sketch_dir, regex
-end
-
-def read_cpp_contents sketch_dir, regex
-	source_cpp_path = "#{$sketches_dir}/#{sketch_dir}/src/ofApp.cpp"
-	if File.exist?(source_cpp_path)
-		file = open(source_cpp_path, 'r')
-		contents = file.read
-		file.close
-		selected = contents[regex, 1]
-		if selected.nil?
-			selected
-		else
-			html_escape(selected.strip.chomp('\n'))
-		end
-	else
-		nil
-	end
 end
 
 #string builder helpers
