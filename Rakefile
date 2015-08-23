@@ -25,14 +25,14 @@ task :validate do
 	validate
 end
 
-task :copy do
+task :pull do
 	load_config
 	if validate
 		check_for_new_month
-		copy_sketches
+		pull_sketches
 		generate_files
 	else
-		puts 'Please fix these errors before copying'
+		puts 'Please fix these errors before pulling'
 	end
 end
 
@@ -80,7 +80,7 @@ task :deploy, :datestring do |t, args|
 	end
 end
 
-task :move do
+task :jump do
 	load_config
 	increment_month
 end
@@ -120,7 +120,7 @@ def increment_month
 		puts "Moving to new repo:\n===================\n"
 		execute "sed -i '' 's/current_month: #$current_month/current_month: #$next_month/g' config.yml && git add config.yml && git commit -m 'Increments to #$next_month' && git push"
 	else
-		puts 'You are not ready to move. Try running \'rake copy\' for more detail.'
+		puts 'You are not ready to jump. Try running \'rake pull\' for guidance.'
 	end
 end
 
@@ -224,17 +224,17 @@ def sketch_dirs
 	end
 end
 
-#copy
+#pull
 def check_for_new_month
 	if new_month_sketch_detected?
 		if ready_for_month_switch?
 			puts "You are ready to switch from your #$current_month_name repo to a new #$next_month_name repo!"
 			puts "1. Go to https://github.com/organizations/#$github_org_name/repositories/new"
 			puts "2. Enter sketches-#$next_month as the repository name and click 'create repository'"
-			puts "3. Run 'rake move' to update the manager config"
-			puts "The next time you run 'rake copy' everything will be working with the new month's repo"
+			puts "3. Run 'rake jump' to update the manager config"
+			puts "The next time you run 'rake pull' everything will be working with the new month's repo"
 		else
-			puts "WARNING: One or more sketches for #$next_month_name were detected, but will not be copied yet. To copy them, please deploy all #$current_month_name sketches and run 'rake copy' again."
+			puts "WARNING: One or more sketches for #$next_month_name were detected, but will not be pulled yet. To pull them, please deploy all #$current_month_name sketches and run 'rake pull' again."
 		end
 	end
 end
@@ -264,9 +264,9 @@ def undeployed_sketches_exist?
 	return system_output.scan($git_clean_dir).length != $num_managed_repos
 end
 
-def copy_sketches
+def pull_sketches
 	starttime = Time.now
-	print "Copying openFrameworks sketches... "
+	print "Pulling openFrameworks sketches... "
 	execute_silent "rsync -ru #$sketches_dir/#$current_month* sketches/#$current_sketch_repo"
 	endtime = Time.now
 	print "completed in #{endtime - starttime} seconds.\n"
