@@ -32,13 +32,13 @@ task :clone, [:source, :datestring] do |t, args|
 	dest = dest == 'yesterday' ? Date::today.prev_day.strftime : dest
 	dest = dest.strip.chomp('\n')
 
-	if dest == '' || !$template_options.has_value?(source)
+	if valid_template?(source) && valid_date?(dest)
+		clone dest, source
+	else
 		puts 'This command generates a new runnable blank sketch from a template'
 		puts 'Usage: rake clone[source,destination]'
 		puts 'or:    rake clone[gifEncoder,yesterday]'
 		puts 'or:    rake clone[audioSequencer,yyyy-mm-dd]'
-	else
-		clone dest, source
 	end
 end
 
@@ -230,6 +230,14 @@ def validate_snippet_and_description
 		end
 	end
 	valid
+end
+
+def valid_date? arg
+	/^\d{4}-\d{2}-\d{2}$/.match arg
+end
+
+def valid_template? arg
+	$template_options.has_value?(arg)
 end
 
 def sketch_dirs
