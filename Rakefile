@@ -291,13 +291,13 @@ end
 
 def clone_from_template source, dest
 	source = "example-#{source}"
-	source_path = "#$templates_dir/#{source}/"
+	source_path = "#$templates_dir/#{source}"
 	success_msg = "Created sketch #{dest} by cloning template #{source}."
 	clone source, source_path, dest, success_msg
 end
 
 def clone_from_sketch source, dest
-	source_path = "#$sketches_dir/#{source}/"
+	source_path = "#$sketches_dir/#{source}"
 	success_msg = "Created sketch #{dest} by cloning sketch #{source}."
 	clone source, source_path, dest, success_msg
 end
@@ -307,7 +307,7 @@ def clone source, source_path, dest, success_msg
 
 	if ready_for_clone?(source, source_path, dest, dest_path)
 		#copy the template
-		execute_silent "rsync -ru #{source_path} #{dest_path}"
+		execute_silent "rsync -ru #{source_path}/ #{dest_path}"
 
 		#rename files
 		xcodeproj = "#{dest_path}/#{source}.xcodeproj"
