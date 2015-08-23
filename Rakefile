@@ -309,7 +309,6 @@ def clone source, source_path, dest, success_msg
 
 		#rename files
 		xcodeproj = "#$sketches_dir/#{source}/#{source}.xcodeproj"
-		execute_silent "mv #{xcodeproj}/project.xcworkspace/xcshareddata/#{source}.xccheckout #{xcodeproj}/project.xcworkspace/xcshareddata/#{dest}.xccheckout"
 		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/#{source}\\\ Debug.xcscheme   #{xcodeproj}/xcshareddata/xcschemes/#{dest}\\\ Debug.xcscheme"
 		execute_silent "mv #{xcodeproj}/xcshareddata/xcschemes/#{source}\\\ Release.xcscheme #{xcodeproj}/xcshareddata/xcschemes/#{dest}\\\ Release.xcscheme"
 		execute_silent "mv #{xcodeproj} #$sketches_dir/#{source}/#{dest}.xcodeproj"
@@ -318,7 +317,9 @@ def clone source, source_path, dest, success_msg
 		#recursive rewrite of references to old filenames
 		execute_silent "cd #$sketches_dir/#{dest}/#{dest}.xcodeproj && LC_ALL=C find . -path '*.*' -type f -exec sed -i '' -e 's/#{source}/#{dest}/g' {} +"
 
-		#clear user data dirs
+		#clear project instance-specific & user data
+		xcodeproj = "#$sketches_dir/#{dest}/#{dest}.xcodeproj"
+		execute_silent "rm -f  #{xcodeproj}/project.xcworkspace/xcshareddata/*.xccheckout"
 		execute_silent "rm -rf #{xcodeproj}/project.xcworkspace/xcuserdata"
 		execute_silent "rm -rf #{xcodeproj}/xcuserdata"
 		execute_silent "rm -rf #$sketches_dir/#{dest}/bin/data/AudioUnitPresets/.trash/"
