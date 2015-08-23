@@ -155,13 +155,15 @@ def print_uncopied_sketches
 	puts "Source sketches dir:\n====================\n"
 	current_month_sketches = uncopied_sketches $current_month
 	if current_month_sketches.size == 0
-		puts 'No sketches found waiting to be copied.'
+		puts 'No new sketches found waiting to be pulled.'
 	else
-		puts 'The following openFrameworks sketches are ready to be copied:'
+		puts 'The following openFrameworks sketches are ready to be pulled:'
 		puts current_month_sketches
 		puts
 		validate
 	end
+	puts
+	puts '(Note that if you have edited sketches which have previously been pulled, that will not be detected by a status check until after you pull again. Run \'rake pull\', then run \'rake status\' again to see the changed file list.)'
 	puts
 end
 
