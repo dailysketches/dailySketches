@@ -171,12 +171,13 @@ def clone datestring, source
 		end
 
 		cpp_path = "#$sketches_dir/#{datestring}/src/ofApp.cpp"
-		file = File.open(cpp_path, 'r+')
-		contents = file.read
-		#file.puts contents
-		puts contents
-		file.close
-		puts "Created sketch #{datestring} in run-sketches."
+		contents = File.read(cpp_path)
+		file = File.new(cpp_path, "w+")
+		File.open(file, "a") do |file|
+			file.write contents.gsub(/[\n\r]*.*\/\/.*/, '')
+		end
+
+		puts "Created sketch #{datestring} from example-#{source}."
 	end
 end
 
