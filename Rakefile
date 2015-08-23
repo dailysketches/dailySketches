@@ -21,23 +21,23 @@ task :copy do
 	end
 end
 
-task :generate, [:datestring, :source] do |t, args|
+task :clone, [:datestring, :source] do |t, args|
 	load_config
 	if args[:datestring] == nil || !$template_options.include?(args[:source])
 		puts 'This command generates a new runnable blank sketch from a template'
-		puts 'Usage: rake generate[today,gifEncoder]'
-		puts 'or:    rake generate[yesterday,audioSequencer]'
-		puts 'or:    rake generate[yyyy-mm-dd,audioSequencer]'
+		puts 'Usage: rake clone[today,gifEncoder]'
+		puts 'or:    rake clone[yesterday,audioSequencer]'
+		puts 'or:    rake clone[yyyy-mm-dd,audioSequencer]'
 	elsif args[:datestring] == 'today'
-		generate Date::today.strftime, args[:source]
+		clone Date::today.strftime, args[:source]
 	elsif args[:datestring] == 'yesterday'
-		generate Date::today.prev_day.strftime, args[:source]
+		clone Date::today.prev_day.strftime, args[:source]
 	else
 		datestring = args[:datestring].strip.chomp('\n')
 		if datestring == ''
-			puts 'Usage: rake generate[_date_, _source_]'
+			puts 'Usage: rake clone[today,gifEncoder] etc'
 		else
-			generate datestring, args[:source]
+			clone datestring, args[:source]
 		end
 	end
 end
@@ -141,7 +141,7 @@ def deploy_all datestring
 	execute "cd #$jekyll_repo && pwd && git add app/_posts/#{datestring}-sketch.md && git commit -m 'Adds sketch #{datestring}' && git push && grunt deploy"
 end
 
-def generate datestring, source
+def clone datestring, source
 	dirpath = "#$sketches_dir/#{datestring}"
 	if Dir.exist?(dirpath)
 		puts "WARNING: Sketch #{datestring} already exists... aborting."
@@ -169,6 +169,13 @@ def generate datestring, source
 		$sketch_extensions.each do |ext|
 			execute_silent "rm -f #$sketches_dir/#{datestring}/bin/data/out/*#{ext}"
 		end
+
+		cpp_path = "#$sketches_dir/#{datestring}/src/ofApp.cpp"
+		file = File.open(cpp_path, 'r+')
+		contents = file.read
+		#file.puts contents
+		puts contents
+		file.close
 		puts "Created sketch #{datestring} in run-sketches."
 	end
 end
