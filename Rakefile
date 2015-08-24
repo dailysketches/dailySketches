@@ -159,7 +159,6 @@ def print_uncopied_sketches
 	else
 		puts 'The following openFrameworks sketches are ready to be pulled:'
 		puts current_month_sketches
-		puts
 		validate
 	end
 	puts
