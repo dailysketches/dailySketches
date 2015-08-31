@@ -25,14 +25,14 @@ task :validate do
 	validate
 end
 
-task :pull do
+task :fetch do
 	load_config
 	if validate
 		check_for_new_month
-		pull_sketches
+		fetch_sketches
 		generate_files
 	else
-		puts 'Please fix these errors before pulling'
+		puts 'Please fix these errors before fetching'
 	end
 end
 
@@ -118,7 +118,7 @@ def increment_month
 		puts "Moving to new repo:\n===================\n"
 		execute "sed -i '' 's/current_month: #$current_month/current_month: #$next_month/g' config.yml && git add config.yml && git commit -m 'Increments to #$next_month' && git push"
 	else
-		puts 'You are not ready to jump. Try running \'rake pull\' for guidance.'
+		puts 'You are not ready to jump. Try running \'rake fetch\' for guidance.'
 	end
 end
 
@@ -155,14 +155,14 @@ def print_uncopied_sketches
 	puts "Source sketches dir:\n====================\n"
 	current_month_sketches = uncopied_sketches $current_month
 	if current_month_sketches.size == 0
-		puts 'No new sketches found waiting to be pulled.'
+		puts 'No new sketches found waiting to be fetched.'
 	else
-		puts 'The following openFrameworks sketches are ready to be pulled:'
+		puts 'The following openFrameworks sketches are ready to be fetched:'
 		puts current_month_sketches
 		validate
 	end
 	puts
-	puts '(Note that if you have edited sketches which have previously been pulled, that will not be detected by a status check until after you pull again. Run \'rake pull\', then run \'rake status\' again to see the changed file list.)'
+	puts '(Note that if you have edited sketches which have previously been fetched, that will not be detected by a status check until after you fetch again. Run \'rake fetch\', then run \'rake status\' again to see the changed file list.)'
 	puts
 end
 
@@ -223,7 +223,7 @@ def sketch_dirs
 	end
 end
 
-#pull
+#fetch
 def check_for_new_month
 	if new_month_sketch_detected?
 		if ready_for_month_switch?
@@ -231,9 +231,9 @@ def check_for_new_month
 			puts "1. Go to https://github.com/organizations/#$github_org_name/repositories/new"
 			puts "2. Enter sketches-#$next_month as the repository name and click 'create repository'"
 			puts "3. Run 'rake jump' to update the manager config"
-			puts "The next time you run 'rake pull' everything will be working with the new month's repo"
+			puts "The next time you run 'rake fetch' everything will be working with the new month's repo"
 		else
-			puts "WARNING: One or more sketches for #$next_month_name were detected, but will not be pulled yet. To pull them, please deploy all #$current_month_name sketches and run 'rake pull' again."
+			puts "WARNING: One or more sketches for #$next_month_name were detected, but will not be fetched yet. To fetch them, please deploy all #$current_month_name sketches and run 'rake fetch' again."
 		end
 	end
 end
@@ -263,9 +263,9 @@ def undeployed_sketches_exist?
 	return system_output.scan($git_clean_dir).length != $num_managed_repos
 end
 
-def pull_sketches
+def fetch_sketches
 	starttime = Time.now
-	print "Pulling openFrameworks sketches... "
+	print "Fetching openFrameworks sketches... "
 	execute_silent "rsync -ru #$sketches_dir/#$current_month* sketches/#$current_sketch_repo"
 	endtime = Time.now
 	print "completed in #{endtime - starttime} seconds.\n"
