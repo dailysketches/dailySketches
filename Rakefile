@@ -162,7 +162,7 @@ def print_uncopied_sketches
 		validate
 	end
 	puts
-	puts '(Note that if you have edited sketches which have previously been fetched, that will not be detected by a status check until after you fetch again. Run \'rake fetch\', then run \'rake status\' again to see the changed file list.)'
+	puts '(Note that \'rake status\' only looks for new sketches. If you have made edits, run \'rake fetch\', then \'rake status\' to see the changes.)'
 	puts
 end
 
