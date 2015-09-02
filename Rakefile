@@ -155,14 +155,15 @@ def print_uncopied_sketches
 	puts "Source sketches dir:\n====================\n"
 	current_month_sketches = uncopied_sketches $current_month
 	if current_month_sketches.size == 0
-		puts 'No new sketches found waiting to be fetched.'
+		puts "No new #$current_month_name sketches found."
 	else
-		puts 'The following openFrameworks sketches are ready to be fetched:'
+		pluralization = current_month_sketches.size > 1 ? 'es' : ''
+		puts "Found #{current_month_sketches.size} new sketch#{pluralization} for #$current_month_name:"
 		puts current_month_sketches
 		validate
 	end
 	puts
-	puts '(Note that \'rake status\' only looks for new sketches. If you have made edits, run \'rake fetch\', then \'rake status\' to see the changes.)'
+	puts '(Note that you will only see new sketches here. If you have made edits to existing sketches, run \'rake fetch\', then \'rake status\'.)'
 	puts
 end
 
