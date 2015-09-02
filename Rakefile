@@ -152,19 +152,31 @@ def print_all_status
 end
 
 def print_uncopied_sketches
-	puts "Source sketches dir:\n====================\n"
+	puts "Source OF sketches:\n===================\n"
+	puts 'This checks new sketches only. To deploy edits, just fetch then manually push and deploy them in the appropriate repos.'
+	puts
 	current_month_sketches = uncopied_sketches $current_month
+	next_month_sketches = uncopied_sketches $next_month
 	if current_month_sketches.size == 0
 		puts "No new #$current_month_name sketches found."
+		puts
+		if next_month_sketches.size > 0
+			puts "NOTE: One or more sketches found for #$next_month_name. Run fetch to begin transition."
+			puts
+		end
 	else
 		pluralization = current_month_sketches.size > 1 ? 'es' : ''
 		puts "Found #{current_month_sketches.size} new sketch#{pluralization} for #$current_month_name:"
 		puts current_month_sketches
-		validate
+		puts
+		if !validate
+			puts
+		end
+		if next_month_sketches.size > 0
+			puts "NOTE: One or more sketches found for #$next_month_name. Please fetch and deploy all #$current_month_name sketches to jump to #$next_month_name."
+			puts
+		end
 	end
-	puts
-	puts '(Note that you will only see new sketches here. If you have made edits to existing sketches, run \'rake fetch\', then \'rake status\'.)'
-	puts
 end
 
 #validate (file / directory states)
