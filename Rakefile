@@ -28,9 +28,10 @@ end
 task :fetch do
 	load_config
 	if validate
-		check_for_new_month
-		fetch_sketches
-		generate_files
+		if !check_new_month?
+			fetch_sketches
+			generate_files
+		end
 	else
 		puts 'Please fix these errors before fetching'
 	end
@@ -237,17 +238,26 @@ def sketch_dirs
 end
 
 #fetch
-def check_for_new_month
+def check_new_month?
 	if new_month_sketch_detected?
 		if ready_for_month_switch?
-			puts "You are ready to switch from your #$current_month_name repo to a new #$next_month_name repo!"
+			puts "Congratulations! It's time to switch from your #$current_month_name repo to a new #$next_month_name repo. We must do this once a month, to keep your repos a reasonable size."
+			puts
+			puts "NOTE: Your new #$next_month_name sketch has not been fetched because it must be fetched to a new #$next_month_name repo, once the repo is created."
+			puts
+			puts "Just follow the simple steps below, and then you will be able to continue working as normal, but now deploying to a new #$next_month_name repo:"
+			puts
 			puts "1. Go to https://github.com/organizations/#$github_org_name/repositories/new"
 			puts "2. Enter sketches-#$next_month as the repository name and click 'create repository'"
-			puts "3. Run 'rake jump' to update the manager config"
-			puts "The next time you run 'rake fetch' everything will be working with the new month's repo"
+			puts "3. Run 'rake jump' to finalize the switch to #$next_month_name"
+			puts "4. Run 'rake fetch' to fetch your new #$next_month_name sketch and continue working as normal"
+			true
 		else
 			puts "WARNING: One or more sketches for #$next_month_name were detected, but will not be fetched yet. To fetch them, please deploy all #$current_month_name sketches and run 'rake fetch' again."
+			false
 		end
+	else
+		false
 	end
 end
 
