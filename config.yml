@@ -11,7 +11,7 @@ sketch_manager_repo: dailySketches
 #A new sketch repo is created on the first sketch of a new month. This setting
 #stores the current month and is also used to generate the sketch repo name,
 #in the format: "sketches-#$current_month"
-current_month: 2015-09
+current_month: 2015-10
 
 #This is the jekyll repo which assembles and publishes the site from which your
 #sketches can be viewed online.
