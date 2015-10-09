@@ -314,20 +314,19 @@ end
 def clone_from_template source, dest
 	source = "example-#{source}"
 	source_path = "#$templates_dir/#{source}"
-	success_msg = "Created sketch #{dest} by cloning template #{source}."
-	clone source, source_path, dest, success_msg
+	clone source, source_path, 'template', dest
 end
 
 def clone_from_sketch source, dest
 	source_path = "#$sketches_dir/#{source}"
-	success_msg = "Created sketch #{dest} by cloning sketch #{source}."
-	clone source, source_path, dest, success_msg
+	clone source, source_path, 'sketch', dest
 end
 
-def clone source, source_path, dest, success_msg
+def clone source, source_path, source_type, dest
+	dest = ensure_valid_dest dest
 	dest_path = "#$sketches_dir/#{dest}"
 
-	if ready_for_clone?(source, source_path, dest, dest_path)
+	if valid_clone_source?(source, source_path)
 		#copy the template
 		execute_silent "rsync -ru #{source_path}/ #{dest_path}"
 
@@ -365,22 +364,26 @@ def clone source, source_path, dest, success_msg
 			file.write contents
 		end
 
-		puts success_msg
+		puts "Created sketch #{dest} by cloning #{source_type} #{source}."
 	end
 end
 
-def ready_for_clone? source, source_path, dest, dest_path
+def valid_clone_source? source, source_path
 	result = true
 	unless Dir.exist?(source_path)
 		puts "WARNING: Source for #{source} not found... aborting."
 		result = false
 	end
-
-	if Dir.exist?(dest_path)
-		puts "WARNING: Sketch #{dest} already exists... aborting."
-		result = false
-	end
 	result
+end
+
+def ensure_valid_dest dest
+	dest_path = "#$sketches_dir/#{dest}"
+	letter = 'a'
+	while Dir.exist?("#{dest_path}#{letter}")
+		letter.next!
+	end
+	"#{dest}#{letter}"
 end
 
 def valid_date? arg
