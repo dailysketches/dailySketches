@@ -117,7 +117,12 @@ end
 def increment_month
 	if new_month_sketch_detected? && ready_for_month_switch?
 		puts "Moving to new repo:\n===================\n"
-		execute "sed -i '' 's/current_month: #$current_month/current_month: #$next_month/g' config.yml && git add config.yml && git commit -m 'Increments to #$next_month' && git push && cd sketches/sketches-#$next_month && git init && git remote add origin https://github.com/#$github_org_name/sketches-#$next_month.git && cp sketches/sketches-#$current_month/.gitignore sketches/sketches-#$next_month/ && git add -A && git commit -m 'Adds gitignore' && git push -u origin master"
+		execute "sed -i '' 's/current_month: #$current_month/current_month: #$next_month/g' config.yml"
+		execute "git add config.yml && git commit -m 'Increments to #$next_month' && git push"
+		execute "mkdir sketches/sketches-#$next_month"
+		execute "cd sketches/sketches-#$next_month && git init && git remote add origin https://github.com/#$github_org_name/sketches-#$next_month.git"
+		execute "cp sketches/sketches-#$current_month/.gitignore sketches/sketches-#$next_month/"
+		execute "cd sketches/sketches-#$next_month/ && git add .gitignore && git commit -m 'Adds gitignore' && git push -u origin master"
 	else
 		puts 'You are not ready to jump. Try running \'rake fetch\' for guidance.'
 	end
