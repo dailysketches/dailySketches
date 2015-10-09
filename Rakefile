@@ -423,7 +423,7 @@ def generate_files
 			generate_readme filename, 'gif'
 		end
 		if filename.end_with? '.mp3'
-			filename = File.basename(filename, '.gif')
+			filename = File.basename(filename, '.mp3')
 			generate_post filename, 'mp3'
 			generate_readme filename, 'mp3'
 		end
