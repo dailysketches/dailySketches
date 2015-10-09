@@ -359,6 +359,7 @@ def clone source, source_path, source_type, dest
 		File.open(file, "a") do |file|
 			contents = contents.gsub(/[\n\r]*.*\/\/.*/, '')
 			contents = contents.gsub(/[\n\r]\/\*.*?\*\//m, '')
+			contents = contents.gsub("\"out/filename\"", "\"out/#{dest}\"")
 			contents = contents.gsub("\nvoid ofApp::setup(){", "/* Begin description\n{\n    #$default_description_text\n}\nEnd description */\n\n/* Snippet begin */\nvoid ofApp::setup(){")
 			contents = contents.gsub("}\n\nvoid ofApp::keyPressed(int key){", "}\n/* Snippet end */\n\nvoid ofApp::keyPressed(int key){")
 			file.write contents
