@@ -61,18 +61,12 @@ end
 task :deploy, :datestring do |t, args|
 	load_config
 	if args[:datestring] == nil
-		puts 'This command deploys one sketch at a time, identified by it\'s date'
-		puts 'Usage: rake deploy[today]'
-		puts 'or:    rake deploy[yesterday]'
-		puts 'or:    rake deploy[yyyy-mm-dd]'
-	elsif args[:datestring] == 'today'
-		deploy_all Date::today.strftime
-	elsif args[:datestring] == 'yesterday'
-		deploy_all Date::today.prev_day.strftime
+		puts 'This command deploys one sketch at a time, identified by it\'s date and letter'
+		puts 'Usage: rake deploy[2019-12-24a]'
 	else
 		datestring = args[:datestring].strip.chomp('\n')
 		if datestring == ''
-			puts 'Usage: rake deploy[yyyy-mm-dd]'
+			puts 'Usage: rake deploy[2019-12-24a]'
 		else
 			deploy_all datestring
 		end
@@ -313,7 +307,7 @@ def template_clone_args? source, dest
 end
 
 def sketch_clone_args? source, dest
-	valid_date?(source) && valid_date?(dest) && source != dest
+	valid_date?(source.chop) && valid_date?(dest) && source != dest
 end
 
 def clone_from_template source, dest
@@ -409,7 +403,7 @@ def deploy_all datestring
 	puts "\nDeploying sketch:\n================="
 	execute "cd sketches/#$current_sketch_repo && pwd && git add #{datestring} && git commit -m 'Adds sketch #{datestring}' && git push & cd ../.."
 	puts "\nDeploying jekyll:\n================="
-	execute "cd #$jekyll_repo && pwd && git add app/_posts/#{datestring}-sketch.md && git commit -m 'Adds sketch #{datestring}' && git push && grunt deploy"
+	execute "cd #$jekyll_repo && pwd && git add app/_posts/#{jekyll_sketch_url datestring}.md && git commit -m 'Adds sketch #{datestring}' && git push && grunt deploy"
 end
 
 #generate
@@ -433,7 +427,7 @@ def generate_files
 end
 
 def generate_post datestring, ext
-	filepath = "#$jekyll_repo/app/_posts/#{datestring}-sketch.md"
+	filepath = "#$jekyll_repo/app/_posts/#{jekyll_sketch_url datestring}.md"
 	unless File.exist?(filepath)
 		file = open(filepath, 'w')
 		file.write(post_file_contents datestring, ext)
@@ -488,7 +482,7 @@ date:   #{datestring}
 ---
 <div class="code">
     <ul>
-		<li><a href="{% post_url #{datestring}-sketch %}">permalink</a></li>
+		<li><a href="{% post_url #{jekyll_sketch_url datestring} %}">permalink</a></li>
 		<li><a href="https://github.com/#$github_org_name/#$current_sketch_repo/tree/master/#{datestring}">code</a></li>
 		<li><a href="#" class="snippet-button">show snippet</a></li>
 	</ul>
@@ -536,6 +530,12 @@ eos
 end
 
 #string builder helpers
+def jekyll_sketch_url datestring
+	letter = datestring[-1]
+	dateonly = datestring.chop
+	return "#{dateonly}-sketch-#{letter}"
+end
+
 def reverse datestring
 	date = DateTime.parse(datestring)
 	date.strftime('%d-%m-%Y')
