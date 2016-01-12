@@ -98,9 +98,8 @@ def load_config
 end
 
 def get_next_month
-	current_month_date = DateTime.parse "#$current_month-01"
-	next_month_date = current_month_date >> 1
-	next_month = next_month_date.strftime '%Y-%m'
+	next_month = Time.now.strftime '%Y-%m'
+	next_month = $current_month == next_month ? next_month >> 1 : next_month
 end
 
 def month_name month_str
