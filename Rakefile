@@ -320,7 +320,7 @@ def template_clone_args? source, dest
 end
 
 def sketch_clone_args? source, dest
-	valid_date?(source.chop) && valid_date?(dest) && source != dest
+	(valid_date?(source) || valid_date?(source.chop)) && valid_date?(dest) && source != dest
 end
 
 def clone_from_template source, dest
