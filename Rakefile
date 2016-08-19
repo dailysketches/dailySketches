@@ -340,7 +340,7 @@ def clone source, source_path, source_type, dest
 
 	if valid_clone_source?(source, source_path)
 		#copy the template
-		execute_silent "rsync -ru #{source_path}/ #{dest_path}"
+		execute_silent "rsync -ruq #{source_path}/ #{dest_path}"
 
 		#rename files
 		xcodeproj = "#{dest_path}/#{source}.xcodeproj"
