@@ -4,7 +4,7 @@ require 'yaml'
 include ERB::Util
 $no_errors = true
 $sketch_extensions = ['.gif', '.png', '.mp3']
-$template_options = {'g' => 'gifEncoder', 'a' => 'audioSequencer'}
+$template_options = {'g' => 'gifEncoder', 'v' => 'audioVideoGenerator'}
 $default_description_text = 'Write your description here'
 $git_clean_dir = 'working directory clean'
 $num_managed_repos = 2
@@ -53,7 +53,7 @@ task :clone, [:source, :datestring] do |t, args|
 		puts 'Usage:   rake clone[source,destination]'	
 		puts 'e.g.     rake clone[gifEncoder,yesterday]'
 		puts 'or:      rake clone[audioSequencer,yyyy-mm-dd]'
-		puts 'or:      rake clone[a,yesterday]      // \'a\' short for audioSequencer'
+		puts 'or:      rake clone[v,yesterday]     // \'v\' short for audioVideoGenerator'
 		puts 'or:      rake clone[g,yyyy-mm-dd]     // \'g\' short for gifEncoder'
 	end
 end
