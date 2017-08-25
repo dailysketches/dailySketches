@@ -3,7 +3,8 @@ require 'erb'
 require 'yaml'
 include ERB::Util
 $no_errors = true
-$sketch_extensions = ['.gif', '.png', '.mp3', '.mov']
+$out_folder_extensions = ['.gif', '.png', '.mp3', '.mov']
+$sketch_extensions = ['.gif', '.mp3', '.mov']
 $template_options = {'g' => 'gifEncoder', 'v' => 'audioVideoGenerator'}
 $default_description_text = 'Write your description here'
 $git_clean_dir = 'working tree clean'
@@ -214,7 +215,7 @@ def validate_unexpected_assets_not_present
 	sketch_dirs.each do |sketch_dir|
 		all_asset_selector = "#{$sketches_dir}/#{sketch_dir}/bin/data/out/*.*"
 		Dir.glob(all_asset_selector).select do |entry|
-			if File.basename(entry, '.*') != sketch_dir || !$sketch_extensions.include?(File.extname(entry))
+			if File.basename(entry, '.*') != sketch_dir || !$out_folder_extensions.include?(File.extname(entry))
 				puts "WARNING: Unexpected asset '#{File.basename entry}' found in 'bin/data/out' of sketch #{sketch_dir}"
 				valid = false
 			end
@@ -360,7 +361,7 @@ def clone source, source_path, source_type, dest
 
 		#clear generated binaries (note that .app files can be packages)
 		execute_silent "rm -rf #{dest_path}/bin/*.app"
-		$sketch_extensions.each do |ext|
+		$out_folder_extensions.each do |ext|
 			execute_silent "rm -f #{dest_path}/bin/data/out/*#{ext}"
 		end
 
@@ -424,15 +425,13 @@ def generate_files
 	starttime = Time.now
 	print "Generating jekyll post files... "
 	Dir.glob "sketches/#$current_sketch_repo/*/bin/data/out/*.*" do |filename|
-		if filename.end_with? '.gif'
-			filename = File.basename(filename, '.gif')
-			generate_post filename, 'gif'
-			generate_readme filename, 'gif'
-		end
-		if filename.end_with? '.mp3'
-			filename = File.basename(filename, '.mp3')
-			generate_post filename, 'mp3'
-			generate_readme filename, 'mp3'
+		$sketch_extensions.each do |ext|
+			if filename.end_with? ext
+				filename = File.basename(filename, ext)
+				ext.delete! '.'
+				generate_post filename, ext
+				generate_readme filename, ext
+			end
 		end
 	end
 	endtime = Time.now
