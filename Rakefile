@@ -6,7 +6,7 @@ $no_errors = true
 $sketch_extensions = ['.gif', '.png', '.mp3', '.mov']
 $template_options = {'g' => 'gifEncoder', 'v' => 'audioVideoGenerator'}
 $default_description_text = 'Write your description here'
-$git_clean_dir = 'working directory clean'
+$git_clean_dir = 'working tree clean'
 $num_managed_repos = 2
 
 #api
