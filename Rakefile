@@ -3,8 +3,8 @@ require 'erb'
 require 'yaml'
 include ERB::Util
 $no_errors = true
-$out_folder_extensions = ['.gif', '.png', '.mp3', '.mov']
-$sketch_extensions = ['.gif', '.mp3', '.mov']
+$out_folder_extensions = ['.gif', '.png', '.mp3', '.mp4', '.mov']
+$sketch_extensions = ['.gif', '.mp3', '.mp4']
 $template_options = {'g' => 'gifEncoder', 'v' => 'audioVideoGenerator'}
 $default_description_text = 'Write your description here'
 $git_clean_dir = 'working tree clean'
@@ -425,6 +425,11 @@ def generate_files
 	starttime = Time.now
 	print "Generating jekyll post files... "
 	Dir.glob "sketches/#$current_sketch_repo/*/bin/data/out/*.*" do |filename|
+		if filename.end_with? '.mov'
+			filename_converted = filename.gsub(/.mov$/, '.mp4')
+			execute_silent "ffmpeg -i #{filename} #{filename_converted} && rm #{filename}"
+			filename = filename_converted
+		end
 		$sketch_extensions.each do |ext|
 			if filename.end_with? ext
 				filename = File.basename(filename, ext)
