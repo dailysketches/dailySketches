@@ -6,7 +6,7 @@ github_org_name: dailysketches
 # - allows you to run rake tasks and manage all your underlying sketch repos
 # - stores templates from which you can generate new sketches
 # - provides shortcuts allowing quick access to openFrameworks directories
-sketch_manager_repo: dailySketches
+sketch_manager_repo: sketchManager
 
 #A new sketch repo is created on the first sketch of a new month. This setting
 #stores the current month and is also used to generate the sketch repo name,
@@ -14,14 +14,15 @@ sketch_manager_repo: dailySketches
 current_month: 2017-08
 
 #This is the jekyll repo which assembles and publishes the site from which your
-#sketches can be viewed online.
+#sketches can be viewed online. These settings are used when generating README
+#files, to link users to your published site.
 jekyll_repo: dailysketches.github.io
-site_name: Daily Sketches
+site_name: SketchPad
 
 #These are the paths to your openFrameworks directories from which you can work
 #on individual sketches and templates. For the most-part you will access these
 #from the Finder shortcuts in the root directory of the sketch manager repo. The
 #paths are included here so that rake tasks can help you copy from your
 #openFrameworks 'apps' directory to the sketch and jekyll repos for publishing.
-sketches_dir: ../openFrameworks/versions/098/apps/dailySketches
-templates_dir: ../openFrameworks/versions/098/addons/ofxSketchTemplates
+sketches_dir: ../envs/openFrameworks/098/apps/sketches
+templates_dir: ../envs/openFrameworks/098/addons/ofxSketchTemplates
