@@ -508,7 +508,9 @@ date:   #{datestring}
     </pre>
 </div>
 <p class="description">#{read_description_contents(datestring)}</p>
-#{ext == 'gif' ? render_post_gif(datestring) : render_post_mp3(datestring)}
+#{ext == 'gif' ? render_post_gif(datestring) : ''}
+#{ext == 'mp3' ? render_post_mp3(datestring) : ''}
+#{ext == 'mp4' ? render_post_mp4(datestring) : ''}
 eos
 end
 
@@ -518,7 +520,9 @@ Sketch #{datestring}
 --
 This subfolder of the [#$current_sketch_repo repo](https://github.com/#$github_org_name/#$current_sketch_repo) is the root of an individual openFrameworks sketch. It contains the full source code used to generate this sketch:
 
-#{ext == 'gif' ? render_readme_gif(datestring) : render_readme_mp3(datestring)}
+#{ext == 'gif' ? render_readme_gif(datestring) : ''}
+#{ext == 'mp3' ? render_readme_mp3(datestring) : ''}
+#{ext == 'mp4' ? render_readme_mp4(datestring) : ''}
 
 This source code is published automatically along with each sketch I add to [#$site_name](#$site_url). Here is a [permalink to this sketch](#$site_url/sketch-#{reverse datestring}/) on the #$site_name site.
 
@@ -578,6 +582,17 @@ def render_post_mp3 datestring
 eos
 end
 
+def render_post_mp4 datestring
+	<<-eos
+<p>
+	<video controls>
+		<source src="#{raw_url datestring, 'mp4'}" type="video/mp4">
+		Your browser does not support the video element.
+    </video>
+</p>
+eos
+end
+
 def render_readme_gif datestring
 	"![Sketch #{datestring}](#{raw_url datestring, 'gif'})"
 end
@@ -586,5 +601,11 @@ def render_readme_mp3 datestring
 	<<-eos
 ![Sketch #{datestring}](#{raw_url datestring, 'png'})
 [Listen to the sketch on #$site_name](#$site_url/sketch-#{reverse datestring}/)"
+eos
+end
+
+def render_readme_mp4 datestring
+	<<-eos
+[View the sketch on #$site_name](#$site_url/sketch-#{reverse datestring}/)"
 eos
 end
